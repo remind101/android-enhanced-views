@@ -1,0 +1,14 @@
+*~
+*.DS_Store
+*.class
+*java#
+*.settings
+local.properties
+.arc/
+bin/
+gen/
+out/
+target/
+.gradle/
+build/
+.idea/

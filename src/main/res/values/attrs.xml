@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="EnhancedTextView">
+        <attr name="drawableSticky" format="boolean"/>
+
+        <attr name="innerShadowColor" format="color"/>
+        <attr name="innerShadowRadius" format="float"/>
+        <attr name="innerShadowDx" format="float"/>
+        <attr name="innerShadowDy" format="float"/>
+
+        <attr name="outerShadowColor" format="color"/>
+        <attr name="outerShadowRadius" format="float"/>
+        <attr name="outerShadowDx" format="float"/>
+        <attr name="outerShadowDy" format="float"/>
+
+        <attr name="typeface" format="string"/>
+
+        <attr name="textForeground" format="reference|color"/>
+        <attr name="textBackground" format="reference|color"/>
+
+        <attr name="strokeWidth" format="float"/>
+        <attr name="strokeMiter" format="float"/>
+        <attr name="strokeColor" format="color"/>
+        <attr name="strokeJoinStyle">
+            <enum name="miter" value="0"/>
+            <enum name="bevel" value="1"/>
+            <enum name="round" value="2"/>
+        </attr>
+    </declare-styleable>
+
+    <declare-styleable name="EnhancedEditText">
+        <attr name="clearable" format="boolean"/>
+    </declare-styleable>
+
+    <declare-styleable name="EnhancedCheckableButton">
+        <attr name="checked" format="boolean"/>
+    </declare-styleable>
+
+    <declare-styleable name="PageIndicatorView">
+        <attr name="pageCount" format="integer"/>
+        <attr name="currentPage" format="integer"/>
+        <attr name="typeFace" format="string"/>
+        <attr name="shadowDrawable" format="reference"/>
+        <attr name="doneDrawable" format="reference"/>
+        <attr name="activeCircleDrawable" format="reference"/>
+        <attr name="inActiveCircleDrawable" format="reference"/>
+    </declare-styleable>
+
+    <declare-styleable name="FastScrollView">
+        <attr name="overlayWidth" format="dimension"/>
+        <attr name="overlayHeight" format="dimension"/>
+        <attr name="overlayTextSize" format="dimension"/>
+        <attr name="overlayScrollThumbWidth" format="dimension"/>
+    </declare-styleable>
+
+    <declare-styleable name="EnhancedTextViewTheme">
+        <attr name="EnhancedTextViewStyle" format="reference"/>
+    </declare-styleable>
+
+    <declare-styleable name="EnhancedCheckableButtonTheme">
+        <attr name="EnhancedCheckableButtonStyle" format="reference"/>
+    </declare-styleable>
+
+    <declare-styleable name="EnhancedButtonTheme">
+        <attr name="EnhancedButtonStyle" format="reference"/>
+    </declare-styleable>
+
+    <declare-styleable name="EnhancedEditTextTheme">
+        <attr name="EnhancedEditTextStyle" format="reference"/>
+    </declare-styleable>
+
+    <declare-styleable name="PageIndicatorViewTheme">
+        <attr name="PageIndicatorViewStyle" format="reference"/>
+    </declare-styleable>
+
+</resources>
