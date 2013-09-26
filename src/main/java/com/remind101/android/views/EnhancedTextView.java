@@ -17,6 +17,7 @@ import com.remind101.android.enhancedviews.R;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.WeakHashMap;
 
 public class EnhancedTextView extends TextView {
@@ -37,6 +38,7 @@ public class EnhancedTextView extends TextView {
     private boolean decresingLineSpace;
     private Drawable[] originalDrawables;
     private Paint paint;
+    private TextView tv;
 
 
     public EnhancedTextView(Context context) {
@@ -53,6 +55,7 @@ public class EnhancedTextView extends TextView {
     }
 
     public void init(AttributeSet attrs, int defStyle) {
+        tv = new TextView(getContext());
         outerShadows = new ArrayList<Shadow>();
         innerShadows = new ArrayList<Shadow>();
         if (canvasStore == null) {
@@ -63,8 +66,13 @@ public class EnhancedTextView extends TextView {
             TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.EnhancedTextView, defStyle, android.R.style.Widget_TextView);
             String typefaceName = a.getString(R.styleable.EnhancedTextView_typeface);
             if (typefaceName != null && !typefaceName.equals("") && !isInEditMode()) {
-                Typeface tf = Typeface.createFromAsset(getContext().getAssets(), String.format("fonts/%s.ttf", typefaceName));
-                this.setTypeface(tf);
+                try {
+                    Typeface tf = Typeface.createFromAsset(getContext().getAssets(), String.format("fonts/%s.ttf", typefaceName));
+                    this.setTypeface(tf);
+                } catch (RuntimeException e){
+                    e.printStackTrace();
+                }
+
             }
 
             if (a.hasValue(R.styleable.EnhancedTextView_drawableSticky)) {
@@ -185,7 +193,6 @@ public class EnhancedTextView extends TextView {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         int mSpacingAddFloat = 0;
         try {
-            TextView tv = new TextView(getContext());
             Field mSpacingAdd = tv.getClass().getDeclaredField("mSpacingAdd");
             mSpacingAdd.setAccessible(true);
             mSpacingAddFloat = Math.round(mSpacingAdd.getFloat(this));
@@ -281,7 +288,7 @@ public class EnhancedTextView extends TextView {
                 canvas.save();
                 canvas.translate(getPaddingLeft() + getWidth() / 2 -
                         (paint.measureText(restoreText, 0, restoreText.length())
-                                + getCompoundDrawablePadding() + originalDrawables[0].getIntrinsicWidth() ) / 2, 0);
+                                + getCompoundDrawablePadding() + originalDrawables[0].getIntrinsicWidth()) / 2, 0);
                 super.onDraw(canvas);
                 canvas.restore();
                 this.setText(restoreText);
@@ -292,7 +299,7 @@ public class EnhancedTextView extends TextView {
                 canvas.save();
                 canvas.translate(getPaddingRight() - getWidth() / 2 +
                         (paint.measureText(restoreText, 0, restoreText.length())
-                                + getCompoundDrawablePadding()  + originalDrawables[2].getIntrinsicWidth()) / 2, 0);
+                                + getCompoundDrawablePadding() + originalDrawables[2].getIntrinsicWidth()) / 2, 0);
                 super.onDraw(canvas);
                 canvas.restore();
                 this.setText(restoreText);
@@ -305,7 +312,7 @@ public class EnhancedTextView extends TextView {
     }
 
     private void generateTempCanvas() {
-        String key = String.format("%dx%d", getWidth(), getHeight());
+        String key = String.format(Locale.getDefault(), "%dx%d", getWidth(), getHeight());
         Pair<Canvas, Bitmap> stored = canvasStore.get(key);
         if (stored != null) {
             tempCanvas = stored.first;

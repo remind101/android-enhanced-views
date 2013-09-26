@@ -99,17 +99,17 @@ public class FastScrollView extends FrameLayout
 
         // set all attributes from xml
         if (attrs != null) {
-            TypedArray typedArray = context.obtainStyledAttributes(attrs,
+            TypedArray a = context.obtainStyledAttributes(attrs,
                     R.styleable.FastScrollView);
-            mOverlayHeight = typedArray.getDimensionPixelSize(
+            mOverlayHeight = a.getDimensionPixelSize(
                     R.styleable.FastScrollView_overlayHeight, 0);
-            mOverlayWidth = typedArray.getDimensionPixelSize(
+            mOverlayWidth = a.getDimensionPixelSize(
                     R.styleable.FastScrollView_overlayWidth, 0);
-            mOverlayTextSize = typedArray.getDimensionPixelSize(
+            mOverlayTextSize = a.getDimensionPixelSize(
                     R.styleable.FastScrollView_overlayTextSize, 0);
-            mOverlayScrollThumbWidth = typedArray.getDimensionPixelSize(
+            mOverlayScrollThumbWidth = a.getDimensionPixelSize(
                     R.styleable.FastScrollView_overlayScrollThumbWidth, 0);
-
+            a.recycle();
         }
 
         // Get both the scrollbar states drawables

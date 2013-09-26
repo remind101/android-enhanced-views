@@ -44,8 +44,7 @@ public class EnhancedEditText extends EnhancedTextView implements View.OnTouchLi
                 isCleanable = true;
                 xD = getCompoundDrawables()[2];
                 if (xD == null) {
-                    xD = getResources()
-                            .getDrawable(android.R.drawable.presence_offline);
+                    xD = getResources().getDrawable(android.R.drawable.presence_offline);
                 }
                 xD.setBounds(0, 0, xD.getIntrinsicWidth(), xD.getIntrinsicHeight());
                 setClearIconVisible(false);
@@ -70,6 +69,7 @@ public class EnhancedEditText extends EnhancedTextView implements View.OnTouchLi
                     }
                 });
             }
+            a.recycle();
         }
     }
 
