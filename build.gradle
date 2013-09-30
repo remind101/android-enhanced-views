@@ -8,6 +8,9 @@ buildscript {
 }
 apply plugin: 'android-library'
 
+group 'com.remind101.android.views'
+version '1.0.7'
+
 repositories {
     mavenCentral()
 }
@@ -25,7 +28,7 @@ android {
         minSdkVersion 8
         targetSdkVersion 17
         versionCode 12
-        versionName "1.0.7"
+        versionName version
     }
 
 }
