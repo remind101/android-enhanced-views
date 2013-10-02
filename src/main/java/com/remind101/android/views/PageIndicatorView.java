@@ -55,7 +55,7 @@ public class PageIndicatorView extends View {
 
         numberPaint = new Paint();
         numberPaint.setColor(getResources().getColor(android.R.color.white));
-        numberPaint.setTextSize(13);
+        numberPaint.setTextSize(18);
         numberPaint.setAntiAlias(true);
 
         TypedArray a = getContext().getTheme().obtainStyledAttributes(attrs, R.styleable.PageIndicatorView, defStyle, 0);
@@ -63,7 +63,7 @@ public class PageIndicatorView extends View {
             pageCount = a.getInteger(R.styleable.PageIndicatorView_pageCount, 1);
             currentPage = a.getInteger(R.styleable.PageIndicatorView_currentPage, 1);
 
-            String typefaceName = a.getString(R.styleable.PageIndicatorView_typeFace);
+            String typefaceName = a.getString(R.styleable.PageIndicatorView_font);
             if (typefaceName != null && !typefaceName.equals("") && !isInEditMode()) {
                 Typeface tf = Typeface.createFromAsset(getContext().getAssets(), String.format("fonts/%s.ttf", typefaceName));
                 numberPaint.setTypeface(tf);

@@ -40,7 +40,7 @@
     <declare-styleable name="PageIndicatorView">
         <attr name="pageCount" format="integer"/>
         <attr name="currentPage" format="integer"/>
-        <attr name="typeFace" format="string"/>
+        <attr name="font" format="string"/>
         <attr name="shadowDrawable" format="reference"/>
         <attr name="doneDrawable" format="reference"/>
         <attr name="activeCircleDrawable" format="reference"/>
