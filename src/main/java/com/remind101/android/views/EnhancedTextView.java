@@ -69,7 +69,7 @@ public class EnhancedTextView extends TextView {
                 try {
                     Typeface tf = Typeface.createFromAsset(getContext().getAssets(), String.format("fonts/%s.ttf", typefaceName));
                     this.setTypeface(tf);
-                } catch (RuntimeException e){
+                } catch (RuntimeException e) {
                     e.printStackTrace();
                 }
 
@@ -256,7 +256,7 @@ public class EnhancedTextView extends TextView {
             paint.setStyle(Paint.Style.FILL);
             this.setTextColor(restoreColor);
         }
-        if (innerShadows.size() > 0) {
+        if (innerShadows.size() > 0 && getWidth() > 0 && getHeight() > 0) {
             generateTempCanvas();
             TextPaint paint = this.getPaint();
             for (Shadow shadow : innerShadows) {
