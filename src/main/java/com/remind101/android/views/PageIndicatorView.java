@@ -6,6 +6,7 @@ import android.graphics.*;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.View;
 import com.remind101.android.enhancedviews.R;
 
@@ -55,7 +56,9 @@ public class PageIndicatorView extends View {
 
         numberPaint = new Paint();
         numberPaint.setColor(getResources().getColor(android.R.color.white));
-        numberPaint.setTextSize(18);
+        int textSizeDP = 18;
+        numberPaint.setTextSize(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+                textSizeDP, getResources().getDisplayMetrics()));
         numberPaint.setAntiAlias(true);
 
         TypedArray a = getContext().getTheme().obtainStyledAttributes(attrs, R.styleable.PageIndicatorView, defStyle, 0);
@@ -80,7 +83,7 @@ public class PageIndicatorView extends View {
             inactiveCircle = a.getDrawable(R.styleable.PageIndicatorView_inActiveCircleDrawable);
             inactiveCircle.setBounds(0, 0, inactiveCircle.getIntrinsicHeight(), inactiveCircle.getIntrinsicWidth());
             circleRadius = Math.max(Math.max(activeCircle.getIntrinsicHeight(), activeCircle.getIntrinsicWidth()),
-                    Math.max(inactiveCircle.getIntrinsicHeight(), inactiveCircle.getIntrinsicWidth()))/2;
+                    Math.max(inactiveCircle.getIntrinsicHeight(), inactiveCircle.getIntrinsicWidth())) / 2;
             offset = (int) (4 * circleRadius / 2.5f);
         } finally {
             a.recycle();
