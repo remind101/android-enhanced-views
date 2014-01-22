@@ -8,7 +8,9 @@ import android.graphics.Paint.Join;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.text.TextPaint;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Pair;
 import android.view.Gravity;
@@ -65,7 +67,7 @@ public class EnhancedTextView extends TextView {
         if (attrs != null) {
             TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.EnhancedTextView, defStyle, android.R.style.Widget_TextView);
             String typefaceName = a.getString(R.styleable.EnhancedTextView_typeface);
-            if (typefaceName != null && !typefaceName.equals("") && !isInEditMode()) {
+            if (!TextUtils.isEmpty(typefaceName) && !isInEditMode()) {
                 try {
                     Typeface tf = Typeface.createFromAsset(getContext().getAssets(), String.format("fonts/%s.ttf", typefaceName));
                     this.setTypeface(tf);
@@ -191,22 +193,30 @@ public class EnhancedTextView extends TextView {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        int mSpacingAddFloat = 0;
+        float mSpacingAdd = getLineSpacingExtra();
+        decresingLineSpace = mSpacingAdd < 0.0f;
+        if (decresingLineSpace) {
+            setMeasuredDimension(getMeasuredWidth(), getMeasuredHeight() - (int) mSpacingAdd);
+            this.setGravity(getGravity() | Gravity.TOP);
+        }
+    }
+
+    @Override
+    public float getLineSpacingExtra() {
+        if (Build.VERSION.SDK_INT >= 16) {
+            return super.getLineSpacingExtra();
+        }
+        float mSpacingAddFloat = 0;
         try {
             Field mSpacingAdd = tv.getClass().getDeclaredField("mSpacingAdd");
             mSpacingAdd.setAccessible(true);
-            mSpacingAddFloat = Math.round(mSpacingAdd.getFloat(this));
-            decresingLineSpace = mSpacingAddFloat < 0.0f;
+            mSpacingAddFloat = mSpacingAdd.getFloat(this);
         } catch (NoSuchFieldException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
-
-        if (decresingLineSpace) {
-            setMeasuredDimension(getMeasuredWidth(), getMeasuredHeight() - mSpacingAddFloat);
-            this.setGravity(getGravity() | Gravity.TOP);
-        }
+        return mSpacingAddFloat;
     }
 
     @Override
