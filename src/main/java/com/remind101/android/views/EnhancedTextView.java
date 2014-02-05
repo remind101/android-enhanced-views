@@ -8,6 +8,7 @@ import android.graphics.Paint.Join;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.PaintDrawable;
 import android.os.Build;
 import android.text.TextPaint;
 import android.text.TextUtils;
@@ -39,7 +40,7 @@ public class EnhancedTextView extends TextView {
     private boolean frozen = false;
     private boolean decresingLineSpace;
     private Drawable[] originalDrawables;
-    private Paint paint;
+    private TextPaint textPaint;
     private TextView tv;
 
 
@@ -80,14 +81,14 @@ public class EnhancedTextView extends TextView {
             if (a.hasValue(R.styleable.EnhancedTextView_drawableSticky)) {
                 isDrawableSticky = a.getBoolean(R.styleable.EnhancedTextView_drawableSticky, false);
                 originalDrawables = this.getCompoundDrawables();
-                paint = new Paint();
-                paint.setTextSize(this.getTextSize());
-                paint.setTypeface(this.getTypeface());
-                ColorDrawable bd0 = new ColorDrawable(Color.TRANSPARENT);
+                textPaint = new TextPaint();
+                textPaint.setTextSize(this.getTextSize());
+                textPaint.setTypeface(this.getTypeface());
+                PaintDrawable bd0 = new PaintDrawable(Color.TRANSPARENT);
                 if (originalDrawables[0] != null) {
                     bd0.setBounds(0, 0, originalDrawables[0].getIntrinsicWidth(), originalDrawables[0].getIntrinsicHeight());
                 }
-                ColorDrawable bd2 = new ColorDrawable(Color.TRANSPARENT);
+                PaintDrawable bd2 = new PaintDrawable(Color.TRANSPARENT);
                 if (originalDrawables[2] != null) {
                     bd2.setBounds(0, 0, originalDrawables[2].getIntrinsicWidth(), originalDrawables[2].getIntrinsicHeight());
                 }
@@ -296,9 +297,11 @@ public class EnhancedTextView extends TextView {
                 this.setText(null);
                 this.setCompoundDrawables(originalDrawables[0], null, null, null);
                 canvas.save();
-                canvas.translate(getPaddingLeft() + getWidth() / 2 -
-                        (paint.measureText(restoreText, 0, restoreText.length())
-                                + getCompoundDrawablePadding() + originalDrawables[0].getIntrinsicWidth()) / 2, 0);
+                canvas.translate(getWidth() / 2
+                        - textPaint.measureText(restoreText, 0, restoreText.length()) / 2
+                        - getCompoundDrawablePadding()
+                        - originalDrawables[0].getIntrinsicWidth() / 2
+                        , 0);
                 super.onDraw(canvas);
                 canvas.restore();
                 this.setText(restoreText);
@@ -308,7 +311,7 @@ public class EnhancedTextView extends TextView {
                 this.setCompoundDrawables(null, null, originalDrawables[2], null);
                 canvas.save();
                 canvas.translate(getPaddingRight() - getWidth() / 2 +
-                        (paint.measureText(restoreText, 0, restoreText.length())
+                        (textPaint.measureText(restoreText, 0, restoreText.length())
                                 + getCompoundDrawablePadding() + originalDrawables[2].getIntrinsicWidth()) / 2, 0);
                 super.onDraw(canvas);
                 canvas.restore();
