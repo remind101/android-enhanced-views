@@ -84,12 +84,14 @@ public class EnhancedTextView extends TextView {
                 textPaint = new TextPaint();
                 textPaint.setTextSize(this.getTextSize());
                 textPaint.setTypeface(this.getTypeface());
-                PaintDrawable bd0 = new PaintDrawable(Color.TRANSPARENT);
+                PaintDrawable bd0 = null;
                 if (originalDrawables[0] != null) {
+                    bd0 = new PaintDrawable(Color.TRANSPARENT);
                     bd0.setBounds(0, 0, originalDrawables[0].getIntrinsicWidth(), originalDrawables[0].getIntrinsicHeight());
                 }
-                PaintDrawable bd2 = new PaintDrawable(Color.TRANSPARENT);
+                PaintDrawable bd2 = null;
                 if (originalDrawables[2] != null) {
+                    bd2 = new PaintDrawable(Color.TRANSPARENT);
                     bd2.setBounds(0, 0, originalDrawables[2].getIntrinsicWidth(), originalDrawables[2].getIntrinsicHeight());
                 }
                 this.setCompoundDrawables(bd0, originalDrawables[1], bd2, originalDrawables[3]);
