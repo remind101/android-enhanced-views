@@ -27,10 +27,10 @@ public class EnhancedEditText extends EnhancedTextView implements View.OnTouchLi
     private OnTouchListener l;
     private OnFocusChangeListener f;
 
+
     public EnhancedEditText(Context context) {
         this(context, null);
     }
-
 
     public EnhancedEditText(Context context, AttributeSet attrs) {
         this(context, attrs, R.attr.EnhancedEditTextStyle);
