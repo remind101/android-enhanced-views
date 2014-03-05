@@ -29,8 +29,8 @@ public class PageIndicatorView extends View {
     private int currentPage;
     private Paint inactivePaint;
     private Paint numberPaint;
-    private float firstCircleX;
-    private float firstCircleY;
+    private int firstCircleX;
+    private int firstCircleY;
     private int dwPerPage;
     private Rect tempRect = new Rect();
 
@@ -75,13 +75,9 @@ public class PageIndicatorView extends View {
             if (shadowDrawable != null && !shadowDrawable.isStateful()) {
                 ((BitmapDrawable) shadowDrawable).setTileModeX(Shader.TileMode.REPEAT);
             }
-            //TODO for API beauty, set default values for following drawables
             doneImage = a.getDrawable(R.styleable.PageIndicatorView_doneDrawable);
-            doneImage.setBounds(0, 0, doneImage.getIntrinsicHeight(), doneImage.getIntrinsicWidth());
             activeCircle = a.getDrawable(R.styleable.PageIndicatorView_activeCircleDrawable);
-            activeCircle.setBounds(0, 0, activeCircle.getIntrinsicHeight(), activeCircle.getIntrinsicWidth());
             inactiveCircle = a.getDrawable(R.styleable.PageIndicatorView_inActiveCircleDrawable);
-            inactiveCircle.setBounds(0, 0, inactiveCircle.getIntrinsicHeight(), inactiveCircle.getIntrinsicWidth());
             circleRadius = Math.max(Math.max(activeCircle.getIntrinsicHeight(), activeCircle.getIntrinsicWidth()),
                     Math.max(inactiveCircle.getIntrinsicHeight(), inactiveCircle.getIntrinsicWidth())) / 2;
             offset = (int) (4 * circleRadius / 2.5f);
@@ -109,7 +105,7 @@ public class PageIndicatorView extends View {
         super.onSizeChanged(width, height, oldWidth, oldHeight);
         dwPerPage = (width - getPaddingLeft() - getPaddingRight()) / pageCount;
         firstCircleX = width / 2 - ((pageCount - 1) * dwPerPage / 2);
-        firstCircleY = (float) (height - getPaddingBottom() + getPaddingTop() - (shadowDrawable == null ? 0 : shadowDrawable.getIntrinsicHeight())) / 2;
+        firstCircleY = (height - getPaddingBottom() + getPaddingTop() - (shadowDrawable == null ? 0 : shadowDrawable.getIntrinsicHeight())) / 2;
     }
 
     @Override
@@ -118,29 +114,39 @@ public class PageIndicatorView extends View {
         for (int i = 0; i < pageCount; i++) {
             String pageName = String.valueOf(i + 1);
             numberPaint.getTextBounds(pageName, 0, pageName.length(), tempRect);
-            float currentCircleCenterX = firstCircleX + i * (dwPerPage);
+            int currentCircleCenterX = firstCircleX + i * (dwPerPage);
 
-            if (i > currentPage - 1) {
-                canvas.save();
-                canvas.translate(currentCircleCenterX - inactiveCircle.getIntrinsicWidth() / 2, firstCircleY - inactiveCircle.getIntrinsicHeight() / 2);
-                inactiveCircle.draw(canvas);
-                canvas.restore();
-                canvas.drawText(pageName, firstCircleX + i * dwPerPage - tempRect.width() / 2f, firstCircleY + tempRect.height() / 2f, numberPaint);
-            } else if (i == currentPage - 1) {
-                canvas.save();
-                canvas.translate(currentCircleCenterX - activeCircle.getIntrinsicWidth() / 2, firstCircleY - activeCircle.getIntrinsicHeight() / 2);
+            if (i == currentPage - 1) {
+                int circleLeft = currentCircleCenterX - activeCircle.getIntrinsicWidth() / 2;
+                int circleTop = firstCircleY - activeCircle.getIntrinsicHeight() / 2;
+                activeCircle.setBounds(
+                        circleLeft,
+                        circleTop,
+                        circleLeft + activeCircle.getIntrinsicWidth(),
+                        circleTop + activeCircle.getIntrinsicHeight());
                 activeCircle.draw(canvas);
-                canvas.restore();
-                canvas.drawText(pageName, firstCircleX + i * dwPerPage - tempRect.width() / 2f, firstCircleY + tempRect.height() / 2f, numberPaint);
-            } else if (i < currentPage - 1) {
-                canvas.save();
-                canvas.translate(currentCircleCenterX - inactiveCircle.getIntrinsicWidth() / 2, firstCircleY - inactiveCircle.getIntrinsicHeight() / 2);
+                canvas.drawText(pageName, currentCircleCenterX - tempRect.width() / 2, firstCircleY + tempRect.height() / 2, numberPaint);
+            } else {
+                int circleLeft = currentCircleCenterX - inactiveCircle.getIntrinsicWidth() / 2;
+                int circleTop = firstCircleY - inactiveCircle.getIntrinsicHeight() / 2;
+                inactiveCircle.setBounds(
+                        circleLeft,
+                        circleTop,
+                        circleLeft + inactiveCircle.getIntrinsicWidth(),
+                        circleTop + inactiveCircle.getIntrinsicHeight());
                 inactiveCircle.draw(canvas);
-                canvas.restore();
-                canvas.save();
-                canvas.translate(currentCircleCenterX - doneImage.getIntrinsicWidth() / 2, firstCircleY - doneImage.getIntrinsicHeight() / 2);
-                doneImage.draw(canvas);
-                canvas.restore();
+                if (i > currentPage - 1) {
+                    canvas.drawText(pageName, (float) (currentCircleCenterX - Math.ceil(tempRect.width() / 2f)), firstCircleY + tempRect.height() / 2f, numberPaint);
+                } else {
+                    int checkLeft = currentCircleCenterX - doneImage.getIntrinsicWidth() / 2;
+                    int checkTop = firstCircleY - doneImage.getIntrinsicHeight() / 2;
+                    doneImage.setBounds(
+                            checkLeft,
+                            checkTop,
+                            checkLeft + doneImage.getIntrinsicWidth(),
+                            checkTop + doneImage.getIntrinsicHeight());
+                    doneImage.draw(canvas);
+                }
             }
 
             if (i == pageCount - 1) { //if last circle is being draw, draw the shadow and exit
