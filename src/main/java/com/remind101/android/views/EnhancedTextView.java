@@ -15,6 +15,8 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Pair;
 import android.view.Gravity;
+import android.view.MotionEvent;
+import android.view.View;
 import android.widget.TextView;
 import com.remind101.android.enhancedviews.R;
 
@@ -23,7 +25,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.WeakHashMap;
 
-public class EnhancedTextView extends TextView {
+public class EnhancedTextView extends TextView implements View.OnTouchListener {
 
     boolean isDrawableSticky;
     private ArrayList<Shadow> outerShadows;
@@ -43,6 +45,49 @@ public class EnhancedTextView extends TextView {
     private TextPaint textPaint;
     private TextView tv;
 
+    private OnTouchListener l;
+    private OnFocusChangeListener f;
+    private OnDrawableClick onDrawableClickListener;
+
+    public interface OnDrawableClick {
+        public void onRightDrawableClick();
+
+        public void onLeftDrawableClick();
+    }
+
+    public OnDrawableClick getOnDrawableClickListener() {
+        return onDrawableClickListener;
+    }
+
+    public void setOnDrawableClickListener(OnDrawableClick onDrawableClickListener) {
+        this.onDrawableClickListener = onDrawableClickListener;
+        super.setOnTouchListener(this);
+    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        if (getCompoundDrawables() != null) {
+            if (getCompoundDrawables()[2] != null) {
+                boolean isInRightDrawable = event.getX() > (getWidth() - getPaddingRight() - getCompoundDrawables()[2].getIntrinsicWidth());
+                if (isInRightDrawable) {
+                    if (event.getAction() == MotionEvent.ACTION_UP) {
+                        onDrawableClickListener.onRightDrawableClick();
+                    }
+                    return true;
+                }
+            }
+            if (getCompoundDrawables()[0] != null) {
+                boolean isInLeftDrawable = event.getX() > (getWidth() - getPaddingRight() - getCompoundDrawables()[0].getIntrinsicWidth());
+                if (isInLeftDrawable) {
+                    if (event.getAction() == MotionEvent.ACTION_UP) {
+                        onDrawableClickListener.onLeftDrawableClick();
+                    }
+                    return true;
+                }
+            }
+        }
+        return super.onTouchEvent(event);
+    }
 
     public EnhancedTextView(Context context) {
         this(context, null);

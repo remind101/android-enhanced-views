@@ -20,11 +20,10 @@ import com.remind101.android.enhancedviews.R;
  * Date: 5/30/13
  * Time: 11:30 PM
  */
-public class EnhancedEditText extends EnhancedTextView implements View.OnTouchListener, View.OnFocusChangeListener {
+public class EnhancedEditText extends EnhancedTextView implements View.OnFocusChangeListener, EnhancedTextView.OnDrawableClick {
 
     private Drawable xD;
     private boolean isCleanable;
-    private OnTouchListener l;
     private OnFocusChangeListener f;
 
 
@@ -43,17 +42,16 @@ public class EnhancedEditText extends EnhancedTextView implements View.OnTouchLi
             if (a.getBoolean(R.styleable.EnhancedEditText_clearable, false)) {
                 isCleanable = true;
                 xD = getCompoundDrawables()[2];
-                if (xD == null) {
+                if (getCompoundDrawables()[2] == null) {
                     xD = getResources().getDrawable(android.R.drawable.presence_offline);
                 }
                 xD.setBounds(0, 0, xD.getIntrinsicWidth(), xD.getIntrinsicHeight());
                 setClearIconVisible(false);
-                super.setOnTouchListener(this);
+                super.setOnDrawableClickListener(this);
                 super.setOnFocusChangeListener(this);
                 addTextChangedListener(new TextWatcher() {
                     @Override
                     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
                     }
 
                     @Override
@@ -65,7 +63,6 @@ public class EnhancedEditText extends EnhancedTextView implements View.OnTouchLi
 
                     @Override
                     public void afterTextChanged(Editable editable) {
-
                     }
                 });
             }
@@ -77,25 +74,6 @@ public class EnhancedEditText extends EnhancedTextView implements View.OnTouchLi
         return isCleanable;
     }
 
-    @Override
-    public void setOnTouchListener(OnTouchListener l) {
-        this.l = l;
-    }
-
-    @Override
-    public boolean onTouch(View v, MotionEvent event) {
-        if (getCompoundDrawables()[2] != null) {
-            boolean tappedX = event.getX() > (getWidth() - getPaddingRight() - xD
-                    .getIntrinsicWidth());
-            if (tappedX) {
-                if (event.getAction() == MotionEvent.ACTION_UP) {
-                    setText("");
-                }
-                return true;
-            }
-        }
-        return l != null && l.onTouch(v, event);
-    }
 
     @Override
     public void setOnFocusChangeListener(OnFocusChangeListener f) {
@@ -169,4 +147,13 @@ public class EnhancedEditText extends EnhancedTextView implements View.OnTouchLi
     }
 
 
+    @Override
+    public void onRightDrawableClick() {
+        setText(null);
+    }
+
+    @Override
+    public void onLeftDrawableClick() {
+
+    }
 }
