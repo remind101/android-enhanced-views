@@ -67,20 +67,39 @@ public class EnhancedTextView extends TextView implements View.OnTouchListener {
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         if (getCompoundDrawables() != null) {
-            if (getCompoundDrawables()[2] != null) {
-                boolean isInRightDrawable = event.getX() > (getWidth() - getPaddingRight() - getCompoundDrawables()[2].getIntrinsicWidth());
+            Drawable rightDrawable = getCompoundDrawables()[2];
+            if (rightDrawable != null) {
+                boolean isInRightDrawable = event.getX() > (getWidth() - getPaddingRight() - rightDrawable.getIntrinsicWidth());
                 if (isInRightDrawable) {
-                    if (event.getAction() == MotionEvent.ACTION_UP) {
-                        onDrawableClickListener.onRightDrawableClick();
+                    switch (event.getAction()) {
+                        case MotionEvent.ACTION_DOWN:
+                            rightDrawable.setState(new int[]{android.R.attr.state_pressed});
+                            rightDrawable.invalidateSelf();
+                            break;
+                        case MotionEvent.ACTION_UP:
+                            rightDrawable.setState(null);
+                            rightDrawable.invalidateSelf();
+                            onDrawableClickListener.onRightDrawableClick();
+                            break;
                     }
                     return true;
                 }
             }
-            if (getCompoundDrawables()[0] != null) {
-                boolean isInLeftDrawable = event.getX() > (getWidth() - getPaddingRight() - getCompoundDrawables()[0].getIntrinsicWidth());
+
+            Drawable leftDrawable = getCompoundDrawables()[0];
+            if (leftDrawable != null) {
+                boolean isInLeftDrawable = event.getX() > (getWidth() - getPaddingRight() - leftDrawable.getIntrinsicWidth());
                 if (isInLeftDrawable) {
-                    if (event.getAction() == MotionEvent.ACTION_UP) {
-                        onDrawableClickListener.onLeftDrawableClick();
+                    switch (event.getAction()) {
+                        case MotionEvent.ACTION_DOWN:
+                            leftDrawable.setState(new int[]{android.R.attr.state_pressed});
+                            leftDrawable.invalidateSelf();
+                            break;
+                        case MotionEvent.ACTION_UP:
+                            leftDrawable.setState(null);
+                            leftDrawable.invalidateSelf();
+                            onDrawableClickListener.onLeftDrawableClick();
+                            break;
                     }
                     return true;
                 }
