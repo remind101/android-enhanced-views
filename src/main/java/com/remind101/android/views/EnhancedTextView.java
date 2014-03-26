@@ -48,6 +48,7 @@ public class EnhancedTextView extends TextView implements View.OnTouchListener {
     private OnTouchListener l;
     private OnFocusChangeListener f;
     private OnDrawableClick onDrawableClickListener;
+    private Rect textBounds;
 
     public interface OnDrawableClick {
         public void onRightDrawableClick();
@@ -153,12 +154,23 @@ public class EnhancedTextView extends TextView implements View.OnTouchListener {
                     bd0 = new PaintDrawable(Color.TRANSPARENT);
                     bd0.setBounds(0, 0, originalDrawables[0].getIntrinsicWidth(), originalDrawables[0].getIntrinsicHeight());
                 }
+                PaintDrawable bd1 = null;
+                if (originalDrawables[1] != null) {
+                    bd1 = new PaintDrawable(Color.TRANSPARENT);
+                    bd1.setBounds(0, 0, originalDrawables[1].getIntrinsicWidth(), originalDrawables[1].getIntrinsicHeight());
+                }
                 PaintDrawable bd2 = null;
                 if (originalDrawables[2] != null) {
                     bd2 = new PaintDrawable(Color.TRANSPARENT);
                     bd2.setBounds(0, 0, originalDrawables[2].getIntrinsicWidth(), originalDrawables[2].getIntrinsicHeight());
                 }
-                this.setCompoundDrawables(bd0, originalDrawables[1], bd2, originalDrawables[3]);
+                PaintDrawable bd3 = null;
+                if (originalDrawables[3] != null) {
+                    bd3 = new PaintDrawable(Color.TRANSPARENT);
+                    bd3.setBounds(0, 0, originalDrawables[3].getIntrinsicWidth(), originalDrawables[3].getIntrinsicHeight());
+                }
+                textBounds = new Rect();
+                this.setCompoundDrawables(bd0, bd1, bd2, bd3);
             }
 
             if (a.hasValue(R.styleable.EnhancedTextView_textForeground)) {
@@ -357,31 +369,35 @@ public class EnhancedTextView extends TextView implements View.OnTouchListener {
             }
         }
 
-
         if (isDrawableSticky && originalDrawables != null) {
+            textPaint.getTextBounds(restoreText.toString(), 0, restoreText.length(), textBounds);
             if (originalDrawables[0] != null) {
-                this.setText(null);
-                this.setCompoundDrawables(originalDrawables[0], null, null, null);
-                canvas.save();
-                canvas.translate(getWidth() / 2
-                        - textPaint.measureText(restoreText, 0, restoreText.length()) / 2
-                        - getCompoundDrawablePadding()
-                        - originalDrawables[0].getIntrinsicWidth() / 2
-                        , 0);
-                super.onDraw(canvas);
-                canvas.restore();
-                this.setText(restoreText);
+                int drawableLeft = getWidth() / 2 - (originalDrawables[0].getIntrinsicWidth() + getCompoundDrawablePadding() + textBounds.width()) / 2;
+                int drawableTop = getHeight() / 2 - originalDrawables[0].getIntrinsicHeight() / 2;
+                originalDrawables[0].setBounds(drawableLeft, drawableTop,
+                        drawableLeft + originalDrawables[0].getIntrinsicWidth(), drawableTop + originalDrawables[0].getIntrinsicHeight());
+                originalDrawables[0].draw(canvas);
+            }
+            if (originalDrawables[1] != null) {
+                int drawableLeft = getWidth() / 2 - originalDrawables[1].getIntrinsicWidth() / 2;
+                int drawableTop = getHeight() / 2 - (textBounds.height() + getCompoundDrawablePadding() + originalDrawables[1].getIntrinsicHeight()) / 2;
+                originalDrawables[1].setBounds(drawableLeft, drawableTop,
+                        drawableLeft + originalDrawables[1].getIntrinsicWidth(), drawableTop + originalDrawables[1].getIntrinsicHeight());
+                originalDrawables[1].draw(canvas);
             }
             if (originalDrawables[2] != null) {
-                this.setText(null);
-                this.setCompoundDrawables(null, null, originalDrawables[2], null);
-                canvas.save();
-                canvas.translate(getPaddingRight() - getWidth() / 2 +
-                        (textPaint.measureText(restoreText, 0, restoreText.length())
-                                + getCompoundDrawablePadding() + originalDrawables[2].getIntrinsicWidth()) / 2, 0);
-                super.onDraw(canvas);
-                canvas.restore();
-                this.setText(restoreText);
+                int drawableLeft = getWidth() / 2 + (originalDrawables[2].getIntrinsicWidth() + getCompoundDrawablePadding() + textBounds.width()) / 2 - originalDrawables[2].getIntrinsicWidth();
+                int drawableTop = getHeight() / 2 - originalDrawables[2].getIntrinsicHeight() / 2;
+                originalDrawables[2].setBounds(drawableLeft, drawableTop,
+                        drawableLeft + originalDrawables[2].getIntrinsicWidth(), drawableTop + originalDrawables[2].getIntrinsicHeight());
+                originalDrawables[2].draw(canvas);
+            }
+            if (originalDrawables[3] != null) {
+                int drawableLeft = getWidth() / 2 - originalDrawables[3].getIntrinsicWidth() / 2;
+                int drawableTop = getHeight() / 2 + (textBounds.height() + getCompoundDrawablePadding() + originalDrawables[3].getIntrinsicHeight()) / 2 - originalDrawables[3].getIntrinsicHeight();
+                originalDrawables[3].setBounds(drawableLeft, drawableTop,
+                        drawableLeft + originalDrawables[3].getIntrinsicWidth(), drawableTop + originalDrawables[3].getIntrinsicHeight());
+                originalDrawables[3].draw(canvas);
             }
         }
         if (restoreDrawables != null) {
