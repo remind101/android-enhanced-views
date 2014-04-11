@@ -17,4 +17,21 @@ android {
     }
 
 }
+android.applicationVariants.all { variant ->
 
+    def debugTaskName = "debug${variant.name}SDKManager"
+    task(debugTaskName) << {
+        def stdout = new ByteArrayOutputStream()
+
+        project.exec {
+            executable = 'ls'
+            args = ['-R', '~/.android-sdk']
+            standardOutput = stdout
+        }
+
+        if (stdout.toByteArray().length > 0) {
+            println stdout.toString()
+        }
+    }
+    variant.generateBuildConfig.dependsOn(debugTaskName )
+}
