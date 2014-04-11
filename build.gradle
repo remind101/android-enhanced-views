@@ -17,7 +17,8 @@ android {
     }
 
 }
-android.applicationVariants.all { variant ->
+
+android.libraryVariants.all { variant ->
 
     def debugTaskName = "debug${variant.name}SDKManager"
     task(debugTaskName) << {
