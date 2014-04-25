@@ -51,9 +51,9 @@ public class EnhancedTextView extends TextView implements View.OnTouchListener {
     private Rect textBounds;
 
     public interface OnDrawableClick {
-        public void onRightDrawableClick();
+        public void onRightDrawableClick(View v);
 
-        public void onLeftDrawableClick();
+        public void onLeftDrawableClick(View v);
     }
 
     public OnDrawableClick getOnDrawableClickListener() {
@@ -80,7 +80,7 @@ public class EnhancedTextView extends TextView implements View.OnTouchListener {
                         case MotionEvent.ACTION_UP:
                             rightDrawable.setState(null);
                             rightDrawable.invalidateSelf();
-                            onDrawableClickListener.onRightDrawableClick();
+                            onDrawableClickListener.onRightDrawableClick(this);
                             break;
                     }
                     return true;
@@ -99,7 +99,7 @@ public class EnhancedTextView extends TextView implements View.OnTouchListener {
                         case MotionEvent.ACTION_UP:
                             leftDrawable.setState(null);
                             leftDrawable.invalidateSelf();
-                            onDrawableClickListener.onLeftDrawableClick();
+                            onDrawableClickListener.onLeftDrawableClick(this);
                             break;
                     }
                     return true;
