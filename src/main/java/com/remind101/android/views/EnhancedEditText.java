@@ -148,12 +148,12 @@ public class EnhancedEditText extends EnhancedTextView implements View.OnFocusCh
 
 
     @Override
-    public void onRightDrawableClick() {
+    public void onRightDrawableClick(View v) {
         setText(null);
     }
 
     @Override
-    public void onLeftDrawableClick() {
+    public void onLeftDrawableClick(View v) {
 
     }
 }
