@@ -15,8 +15,4 @@ android {
         versionCode versionCodeIncrement
         versionName version
     }
-    lintOptions {
-        abortOnError false
-    }
-
 }

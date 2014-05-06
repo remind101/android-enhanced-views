@@ -1,5 +1,6 @@
 package com.remind101.android.views;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
@@ -280,9 +281,10 @@ public class EnhancedTextView extends TextView implements View.OnTouchListener {
         }
     }
 
+    @SuppressLint("NewApi")
     @Override
     public float getLineSpacingExtra() {
-        if (Build.VERSION.SDK_INT >= 16) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             return super.getLineSpacingExtra();
         }
         float mSpacingAddFloat = 0;
