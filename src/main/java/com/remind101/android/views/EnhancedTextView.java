@@ -46,8 +46,6 @@ public class EnhancedTextView extends TextView implements View.OnTouchListener {
     private TextPaint textPaint;
     private TextView tv;
 
-    private OnTouchListener l;
-    private OnFocusChangeListener f;
     private OnDrawableClick onDrawableClickListener;
     private Rect textBounds;
 
@@ -63,7 +61,6 @@ public class EnhancedTextView extends TextView implements View.OnTouchListener {
 
     public void setOnDrawableClickListener(OnDrawableClick onDrawableClickListener) {
         this.onDrawableClickListener = onDrawableClickListener;
-        super.setOnTouchListener(this);
     }
 
     @Override
@@ -81,7 +78,9 @@ public class EnhancedTextView extends TextView implements View.OnTouchListener {
                         case MotionEvent.ACTION_UP:
                             rightDrawable.setState(null);
                             rightDrawable.invalidateSelf();
-                            onDrawableClickListener.onRightDrawableClick(this);
+                            if (onDrawableClickListener != null) {
+                                onDrawableClickListener.onRightDrawableClick(this);
+                            }
                             break;
                     }
                     return true;
@@ -90,7 +89,7 @@ public class EnhancedTextView extends TextView implements View.OnTouchListener {
 
             Drawable leftDrawable = getCompoundDrawables()[0];
             if (leftDrawable != null) {
-                boolean isInLeftDrawable = event.getX() > (getWidth() - getPaddingRight() - leftDrawable.getIntrinsicWidth());
+                boolean isInLeftDrawable = event.getX() < (getPaddingLeft() + leftDrawable.getIntrinsicWidth());
                 if (isInLeftDrawable) {
                     switch (event.getAction()) {
                         case MotionEvent.ACTION_DOWN:
@@ -100,7 +99,9 @@ public class EnhancedTextView extends TextView implements View.OnTouchListener {
                         case MotionEvent.ACTION_UP:
                             leftDrawable.setState(null);
                             leftDrawable.invalidateSelf();
-                            onDrawableClickListener.onLeftDrawableClick(this);
+                            if (onDrawableClickListener != null) {
+                                onDrawableClickListener.onLeftDrawableClick(this);
+                            }
                             break;
                     }
                     return true;
@@ -108,6 +109,32 @@ public class EnhancedTextView extends TextView implements View.OnTouchListener {
             }
         }
         return super.onTouchEvent(event);
+    }
+
+    public Rect getLeftDrawableBounds() {
+        int[] wholeViewPos = new int[2];
+        getLocationInWindow(wholeViewPos);
+        int[] drawablePos = new int[2];
+        Drawable leftDrawable = getCompoundDrawables()[0];
+        drawablePos[0] = wholeViewPos[0] + getPaddingLeft();
+        drawablePos[1] = wholeViewPos[1] + getHeight() / 2 - leftDrawable.getIntrinsicHeight() / 2;
+        return new Rect(drawablePos[0],
+                drawablePos[1],
+                drawablePos[0] + leftDrawable.getIntrinsicWidth(),
+                drawablePos[1] + leftDrawable.getIntrinsicHeight());
+    }
+
+    public Rect getRightDrawableBounds() {
+        int[] wholeViewPos = new int[2];
+        getLocationInWindow(wholeViewPos);
+        int[] drawablePos = new int[2];
+        Drawable rightDrawable = getCompoundDrawables()[2];
+        drawablePos[0] = wholeViewPos[0] + getWidth() - getPaddingRight() - rightDrawable.getIntrinsicWidth();
+        drawablePos[1] = wholeViewPos[1] + getHeight() / 2 - rightDrawable.getIntrinsicHeight() / 2;
+        return new Rect(drawablePos[0],
+                drawablePos[1],
+                drawablePos[0] + rightDrawable.getIntrinsicWidth(),
+                drawablePos[1] + rightDrawable.getIntrinsicHeight());
     }
 
     public EnhancedTextView(Context context) {
@@ -121,6 +148,7 @@ public class EnhancedTextView extends TextView implements View.OnTouchListener {
     public EnhancedTextView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         init(attrs, defStyle);
+        setOnTouchListener(this);
     }
 
     public void init(AttributeSet attrs, int defStyle) {
