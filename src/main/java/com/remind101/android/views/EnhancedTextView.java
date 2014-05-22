@@ -31,6 +31,7 @@ public class EnhancedTextView extends TextView implements View.OnTouchListener {
     boolean isDrawableSticky;
     private ArrayList<Shadow> outerShadows;
     private ArrayList<Shadow> innerShadows;
+    private ArrayList<BlurMaskFilter> innerShadowFilters;
     private WeakHashMap<String, Pair<Canvas, Bitmap>> canvasStore;
     private Canvas tempCanvas;
     private Bitmap tempBitmap;
@@ -45,6 +46,9 @@ public class EnhancedTextView extends TextView implements View.OnTouchListener {
     private Drawable[] originalDrawables;
     private TextPaint textPaint;
     private TextView tv;
+    private Rect reusableRect; // Avoid allocation inside onDraw()
+    private static final PorterDuffXfermode SRC_ATOP_XFER_MODE = new PorterDuffXfermode(PorterDuff.Mode.SRC_ATOP);
+    private static final PorterDuffXfermode DST_OUT_XFER_MODE = new PorterDuffXfermode(PorterDuff.Mode.DST_OUT);
 
     private OnDrawableClick onDrawableClickListener;
     private Rect textBounds;
@@ -155,6 +159,8 @@ public class EnhancedTextView extends TextView implements View.OnTouchListener {
         tv = new TextView(getContext());
         outerShadows = new ArrayList<Shadow>();
         innerShadows = new ArrayList<Shadow>();
+        innerShadowFilters = new ArrayList<BlurMaskFilter>();
+        reusableRect = new Rect();
         if (canvasStore == null) {
             canvasStore = new WeakHashMap<String, Pair<Canvas, Bitmap>>();
         }
@@ -280,10 +286,12 @@ public class EnhancedTextView extends TextView implements View.OnTouchListener {
             r = 0.0001f;
         }
         innerShadows.add(new Shadow(r, dx, dy, color));
+        innerShadowFilters.add(new BlurMaskFilter(r, BlurMaskFilter.Blur.NORMAL));
     }
 
     public void clearInnerShadows() {
         innerShadows.clear();
+        innerShadowFilters.clear();
     }
 
     public void clearOuterShadows() {
@@ -357,8 +365,9 @@ public class EnhancedTextView extends TextView implements View.OnTouchListener {
             generateTempCanvas();
             super.onDraw(tempCanvas);
             Paint paint = ((BitmapDrawable) this.foregroundDrawable).getPaint();
-            paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_ATOP));
-            this.foregroundDrawable.setBounds(canvas.getClipBounds());
+            paint.setXfermode(SRC_ATOP_XFER_MODE);
+            canvas.getClipBounds(reusableRect);
+            this.foregroundDrawable.setBounds(reusableRect);
             this.foregroundDrawable.draw(tempCanvas);
             canvas.drawBitmap(tempBitmap, 0, 0, null);
             tempCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
@@ -378,12 +387,13 @@ public class EnhancedTextView extends TextView implements View.OnTouchListener {
         if (innerShadows.size() > 0 && getWidth() > 0 && getHeight() > 0) {
             generateTempCanvas();
             TextPaint paint = this.getPaint();
-            for (Shadow shadow : innerShadows) {
+            for (int i = 0; i < innerShadows.size(); i++) {
+                Shadow shadow = innerShadows.get(i);
                 this.setTextColor(shadow.color);
                 super.onDraw(tempCanvas);
                 this.setTextColor(0xFF000000);
-                paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_OUT));
-                paint.setMaskFilter(new BlurMaskFilter(shadow.r, BlurMaskFilter.Blur.NORMAL));
+                paint.setXfermode(DST_OUT_XFER_MODE);
+                paint.setMaskFilter(innerShadowFilters.get(i));
 
                 tempCanvas.save();
                 tempCanvas.translate(shadow.dx, shadow.dy);
