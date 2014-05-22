@@ -11,7 +11,6 @@ import android.text.method.ArrowKeyMovementMethod;
 import android.text.method.MovementMethod;
 import android.util.AttributeSet;
 import android.view.View;
-import android.widget.TextView;
 import com.remind101.android.enhancedviews.R;
 
 /**
@@ -148,12 +147,12 @@ public class EnhancedEditText extends EnhancedTextView implements View.OnFocusCh
 
 
     @Override
-    public void onRightDrawableClick(TextView textView) {
+    public void onRightDrawableClick(EnhancedTextView textView) {
         setText(null);
     }
 
     @Override
-    public void onLeftDrawableClick(TextView textView) {
+    public void onLeftDrawableClick(EnhancedTextView textView) {
 
     }
 }
