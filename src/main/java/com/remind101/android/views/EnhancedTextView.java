@@ -50,9 +50,9 @@ public class EnhancedTextView extends TextView implements View.OnTouchListener {
     private Rect textBounds;
 
     public interface OnDrawableClick {
-        public void onRightDrawableClick(TextView textView);
+        public void onRightDrawableClick(EnhancedTextView textView);
 
-        public void onLeftDrawableClick(TextView textView);
+        public void onLeftDrawableClick(EnhancedTextView textView);
     }
 
     public OnDrawableClick getOnDrawableClickListener() {
