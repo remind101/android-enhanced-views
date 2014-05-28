@@ -55,6 +55,7 @@ public class EnhancedTextView extends TextView implements View.OnTouchListener {
     private static final PorterDuffXfermode DST_OUT_XFER_MODE = new PorterDuffXfermode(PorterDuff.Mode.DST_OUT);
 
     private OnDrawableClick onDrawableClickListener;
+    private OnPressedStateChangeListener onPressedStateChangeListener;
     private Rect textBounds;
 
     public interface OnDrawableClick {
@@ -63,12 +64,24 @@ public class EnhancedTextView extends TextView implements View.OnTouchListener {
         public void onLeftDrawableClick(EnhancedTextView textView);
     }
 
+    public interface OnPressedStateChangeListener {
+        public void onPressedStateChange(EnhancedTextView textView, boolean pressed);
+    }
+
     public OnDrawableClick getOnDrawableClickListener() {
         return onDrawableClickListener;
     }
 
     public void setOnDrawableClickListener(OnDrawableClick onDrawableClickListener) {
         this.onDrawableClickListener = onDrawableClickListener;
+    }
+
+    public OnPressedStateChangeListener getOnPressedStateChangeListener() {
+        return onPressedStateChangeListener;
+    }
+
+    public void setOnPressedStateChangeListener(OnPressedStateChangeListener onPressedStateChangeListener) {
+        this.onPressedStateChangeListener = onPressedStateChangeListener;
     }
 
     @Override
@@ -560,6 +573,14 @@ public class EnhancedTextView extends TextView implements View.OnTouchListener {
     @Override
     public int getCompoundPaddingBottom() {
         return !frozen ? super.getCompoundPaddingBottom() : lockedCompoundPadding[3];
+    }
+
+    @Override
+    public void setPressed(boolean pressed) {
+        if (onPressedStateChangeListener != null && pressed != isPressed()){
+            onPressedStateChangeListener.onPressedStateChange(this, pressed);
+        }
+        super.setPressed(pressed);
     }
 
     public boolean pointInView(float localX, float localY, float slop) {
