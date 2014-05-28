@@ -49,9 +49,10 @@ public class EnhancedTextView extends TextView implements View.OnTouchListener {
     private TextView tv;
     private Rect reusableRect; // Avoid allocation inside onDraw()
     private float touchSlop;
+    private boolean consumeLeftDrawableTouch;
+    private boolean consumeRightDrawableTouch;
     private static final PorterDuffXfermode SRC_ATOP_XFER_MODE = new PorterDuffXfermode(PorterDuff.Mode.SRC_ATOP);
     private static final PorterDuffXfermode DST_OUT_XFER_MODE = new PorterDuffXfermode(PorterDuff.Mode.DST_OUT);
-
 
     private OnDrawableClick onDrawableClickListener;
     private Rect textBounds;
@@ -102,7 +103,10 @@ public class EnhancedTextView extends TextView implements View.OnTouchListener {
                             }
                             break;
                     }
-                    return true;
+                    if (consumeRightDrawableTouch) {
+                        return true;
+                    }
+                    return super.onTouchEvent(event);
                 }
             }
 
@@ -135,7 +139,10 @@ public class EnhancedTextView extends TextView implements View.OnTouchListener {
                             }
                             break;
                     }
-                    return true;
+                    if (consumeLeftDrawableTouch) {
+                        return true;
+                    }
+                    return super.onTouchEvent(event);
                 }
             }
         }
@@ -287,6 +294,8 @@ public class EnhancedTextView extends TextView implements View.OnTouchListener {
                 }
                 this.setStroke(strokeWidth, strokeColor, strokeJoin, strokeMiter);
             }
+            consumeLeftDrawableTouch = a.getBoolean(R.styleable.EnhancedTextView_consumeLeftDrawableTouch, true);
+            consumeRightDrawableTouch = a.getBoolean(R.styleable.EnhancedTextView_consumeRightDrawableTouch, true);
             a.recycle();
         }
     }

@@ -2,6 +2,9 @@
 <resources>
 
     <declare-styleable name="EnhancedTextView">
+        <attr name="consumeLeftDrawableTouch" format="boolean"/>
+        <attr name="consumeRightDrawableTouch" format="boolean"/>
+
         <attr name="drawableSticky" format="boolean"/>
 
         <attr name="innerShadowColor" format="color"/>
