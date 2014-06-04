@@ -18,7 +18,6 @@ import android.util.Pair;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewConfiguration;
 import android.widget.TextView;
 import com.remind101.android.enhancedviews.R;
 
@@ -48,14 +47,10 @@ public class EnhancedTextView extends TextView implements View.OnTouchListener {
     private TextPaint textPaint;
     private TextView tv;
     private Rect reusableRect; // Avoid allocation inside onDraw()
-    private float touchSlop;
-    private boolean consumeLeftDrawableTouch;
-    private boolean consumeRightDrawableTouch;
     private static final PorterDuffXfermode SRC_ATOP_XFER_MODE = new PorterDuffXfermode(PorterDuff.Mode.SRC_ATOP);
     private static final PorterDuffXfermode DST_OUT_XFER_MODE = new PorterDuffXfermode(PorterDuff.Mode.DST_OUT);
 
     private OnDrawableClick onDrawableClickListener;
-    private OnPressedStateChangeListener onPressedStateChangeListener;
     private Rect textBounds;
 
     public interface OnDrawableClick {
@@ -64,24 +59,12 @@ public class EnhancedTextView extends TextView implements View.OnTouchListener {
         public void onLeftDrawableClick(EnhancedTextView textView);
     }
 
-    public interface OnPressedStateChangeListener {
-        public void onPressedStateChange(EnhancedTextView textView, boolean pressed);
-    }
-
     public OnDrawableClick getOnDrawableClickListener() {
         return onDrawableClickListener;
     }
 
     public void setOnDrawableClickListener(OnDrawableClick onDrawableClickListener) {
         this.onDrawableClickListener = onDrawableClickListener;
-    }
-
-    public OnPressedStateChangeListener getOnPressedStateChangeListener() {
-        return onPressedStateChangeListener;
-    }
-
-    public void setOnPressedStateChangeListener(OnPressedStateChangeListener onPressedStateChangeListener) {
-        this.onPressedStateChangeListener = onPressedStateChangeListener;
     }
 
     @Override
@@ -103,23 +86,8 @@ public class EnhancedTextView extends TextView implements View.OnTouchListener {
                                 onDrawableClickListener.onRightDrawableClick(this);
                             }
                             break;
-                        case MotionEvent.ACTION_CANCEL:
-                            rightDrawable.setState(null);
-                            rightDrawable.invalidateSelf();
-                            break;
-                        case MotionEvent.ACTION_MOVE:
-                            final float x = event.getX();
-                            final float y = event.getY();
-                            if (!pointInView(x, y, touchSlop)){
-                                rightDrawable.setState(null);
-                                rightDrawable.invalidateSelf();
-                            }
-                            break;
                     }
-                    if (consumeRightDrawableTouch) {
-                        return true;
-                    }
-                    return super.onTouchEvent(event);
+                    return true;
                 }
             }
 
@@ -139,23 +107,8 @@ public class EnhancedTextView extends TextView implements View.OnTouchListener {
                                 onDrawableClickListener.onLeftDrawableClick(this);
                             }
                             break;
-                        case MotionEvent.ACTION_CANCEL:
-                            leftDrawable.setState(null);
-                            leftDrawable.invalidateSelf();
-                            break;
-                        case MotionEvent.ACTION_MOVE:
-                            final float x = event.getX();
-                            final float y = event.getY();
-                            if (!pointInView(x, y, touchSlop)){
-                                leftDrawable.setState(null);
-                                leftDrawable.invalidateSelf();
-                            }
-                            break;
                     }
-                    if (consumeLeftDrawableTouch) {
-                        return true;
-                    }
-                    return super.onTouchEvent(event);
+                    return true;
                 }
             }
         }
@@ -208,7 +161,6 @@ public class EnhancedTextView extends TextView implements View.OnTouchListener {
         innerShadows = new ArrayList<Shadow>();
         innerShadowFilters = new ArrayList<BlurMaskFilter>();
         reusableRect = new Rect();
-        touchSlop = ViewConfiguration.get(getContext()).getScaledTouchSlop();
         if (canvasStore == null) {
             canvasStore = new WeakHashMap<String, Pair<Canvas, Bitmap>>();
         }
@@ -307,8 +259,6 @@ public class EnhancedTextView extends TextView implements View.OnTouchListener {
                 }
                 this.setStroke(strokeWidth, strokeColor, strokeJoin, strokeMiter);
             }
-            consumeLeftDrawableTouch = a.getBoolean(R.styleable.EnhancedTextView_consumeLeftDrawableTouch, true);
-            consumeRightDrawableTouch = a.getBoolean(R.styleable.EnhancedTextView_consumeRightDrawableTouch, true);
             a.recycle();
         }
     }
@@ -573,19 +523,6 @@ public class EnhancedTextView extends TextView implements View.OnTouchListener {
     @Override
     public int getCompoundPaddingBottom() {
         return !frozen ? super.getCompoundPaddingBottom() : lockedCompoundPadding[3];
-    }
-
-    @Override
-    public void setPressed(boolean pressed) {
-        if (onPressedStateChangeListener != null && pressed != isPressed()){
-            onPressedStateChangeListener.onPressedStateChange(this, pressed);
-        }
-        super.setPressed(pressed);
-    }
-
-    public boolean pointInView(float localX, float localY, float slop) {
-        return localX >= -slop && localY >= -slop && localX < (getHeight() + slop) &&
-                localY < (getWidth() + slop);
     }
 
     public static class Shadow {
