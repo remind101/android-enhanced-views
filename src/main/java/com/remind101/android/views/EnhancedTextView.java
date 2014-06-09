@@ -418,6 +418,12 @@ public class EnhancedTextView extends TextView implements View.OnTouchListener {
         }
 
         if (isDrawableSticky && originalDrawables != null) {
+            int[] stateSet = getDrawableState();
+            for (Drawable d : originalDrawables) {
+                if (d != null) {
+                    d.setState(stateSet);
+                }
+            }
             textPaint.getTextBounds(restoreText.toString(), 0, restoreText.length(), textBounds);
             if (originalDrawables[0] != null) {
                 int drawableLeft = getWidth() / 2 - (originalDrawables[0].getIntrinsicWidth() + getCompoundDrawablePadding() + textBounds.width()) / 2;
