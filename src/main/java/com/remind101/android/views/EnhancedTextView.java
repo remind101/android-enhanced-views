@@ -418,12 +418,6 @@ public class EnhancedTextView extends TextView implements View.OnTouchListener {
         }
 
         if (isDrawableSticky && originalDrawables != null) {
-            int[] stateSet = getDrawableState();
-            for (Drawable d : originalDrawables) {
-                if (d != null) {
-                    d.setState(stateSet);
-                }
-            }
             textPaint.getTextBounds(restoreText.toString(), 0, restoreText.length(), textBounds);
             if (originalDrawables[0] != null) {
                 int drawableLeft = getWidth() / 2 - (originalDrawables[0].getIntrinsicWidth() + getCompoundDrawablePadding() + textBounds.width()) / 2;
@@ -458,6 +452,19 @@ public class EnhancedTextView extends TextView implements View.OnTouchListener {
             this.setCompoundDrawables(restoreDrawables[0], restoreDrawables[1], restoreDrawables[2], restoreDrawables[3]);
         }
         unfreeze();
+    }
+
+    @Override
+    protected void drawableStateChanged() {
+        super.drawableStateChanged();
+        if (originalDrawables != null) {
+            int[] stateSet = getDrawableState();
+            for (Drawable drawable : originalDrawables) {
+                if (drawable != null) {
+                    drawable.setState(stateSet);
+                }
+            }
+        }
     }
 
     private void generateTempCanvas() {
