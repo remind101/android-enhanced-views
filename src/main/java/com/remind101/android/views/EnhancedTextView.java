@@ -52,6 +52,8 @@ public class EnhancedTextView extends TextView implements View.OnTouchListener {
 
     private OnDrawableClick onDrawableClickListener;
     private Rect textBounds;
+    private boolean consumeLeftDrawableTouch;
+    private boolean consumeRightDrawableTouch;
 
     public interface OnDrawableClick {
         public void onRightDrawableClick(EnhancedTextView textView);
@@ -87,7 +89,7 @@ public class EnhancedTextView extends TextView implements View.OnTouchListener {
                             }
                             break;
                     }
-                    return true;
+                    return consumeRightDrawableTouch || super.onTouchEvent(event);
                 }
             }
 
@@ -108,7 +110,7 @@ public class EnhancedTextView extends TextView implements View.OnTouchListener {
                             }
                             break;
                     }
-                    return true;
+                    return consumeLeftDrawableTouch || super.onTouchEvent(event);
                 }
             }
         }
@@ -259,6 +261,12 @@ public class EnhancedTextView extends TextView implements View.OnTouchListener {
                 }
                 this.setStroke(strokeWidth, strokeColor, strokeJoin, strokeMiter);
             }
+            consumeLeftDrawableTouch = a.getBoolean(
+                    R.styleable.EnhancedTextView_consumeLeftDrawableTouch,
+                    consumeLeftDrawableTouchByDefault());
+            consumeRightDrawableTouch = a.getBoolean(
+                    R.styleable.EnhancedTextView_consumeRightDrawableTouch,
+                    consumeRightDrawableTouchByDefault());
             a.recycle();
         }
     }
@@ -523,6 +531,14 @@ public class EnhancedTextView extends TextView implements View.OnTouchListener {
     @Override
     public int getCompoundPaddingBottom() {
         return !frozen ? super.getCompoundPaddingBottom() : lockedCompoundPadding[3];
+    }
+
+    protected boolean consumeLeftDrawableTouchByDefault() {
+        return false;
+    }
+
+    protected boolean consumeRightDrawableTouchByDefault() {
+        return true;
     }
 
     public static class Shadow {

@@ -34,4 +34,9 @@ public class EnhancedButton extends EnhancedTextView {
     protected MovementMethod getDefaultMovementMethod() {
         return ArrowKeyMovementMethod.getInstance();
     }
+
+    @Override
+    protected boolean consumeRightDrawableTouchByDefault() {
+        return false;
+    }
 }

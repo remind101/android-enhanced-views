@@ -98,4 +98,8 @@ public class EnhancedCheckableButton extends EnhancedTextView implements Checkab
         return drawableState;
     }
 
+    @Override
+    protected boolean consumeRightDrawableTouchByDefault() {
+        return false;
+    }
 }
