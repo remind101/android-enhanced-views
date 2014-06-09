@@ -454,6 +454,19 @@ public class EnhancedTextView extends TextView implements View.OnTouchListener {
         unfreeze();
     }
 
+    @Override
+    protected void drawableStateChanged() {
+        super.drawableStateChanged();
+        if (originalDrawables != null) {
+            int[] stateSet = getDrawableState();
+            for (Drawable drawable : originalDrawables) {
+                if (drawable != null) {
+                    drawable.setState(stateSet);
+                }
+            }
+        }
+    }
+
     private void generateTempCanvas() {
         String key = String.format(Locale.getDefault(), "%dx%d", getWidth(), getHeight());
         Pair<Canvas, Bitmap> stored = canvasStore.get(key);
