@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.WeakHashMap;
 
-public class EnhancedTextView extends TextView implements View.OnTouchListener {
+public class EnhancedTextView extends TextView {
 
     boolean isDrawableSticky;
     private ArrayList<Shadow> outerShadows;
@@ -70,7 +70,7 @@ public class EnhancedTextView extends TextView implements View.OnTouchListener {
     }
 
     @Override
-    public boolean onTouch(View v, MotionEvent event) {
+    public boolean onTouchEvent(MotionEvent event) {
         if (getCompoundDrawables() != null) {
             Drawable rightDrawable = getCompoundDrawables()[2];
             if (rightDrawable != null) {
@@ -154,7 +154,6 @@ public class EnhancedTextView extends TextView implements View.OnTouchListener {
     public EnhancedTextView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         init(attrs, defStyle);
-        setOnTouchListener(this);
     }
 
     public void init(AttributeSet attrs, int defStyle) {
