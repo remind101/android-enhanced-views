@@ -118,12 +118,10 @@ public class EnhancedTextView extends TextView {
     }
 
     public Rect getLeftDrawableBounds() {
-        int[] wholeViewPos = new int[2];
-        getLocationInWindow(wholeViewPos);
         int[] drawablePos = new int[2];
         Drawable leftDrawable = getCompoundDrawables()[0];
-        drawablePos[0] = wholeViewPos[0] + getPaddingLeft();
-        drawablePos[1] = wholeViewPos[1] + getHeight() / 2 - leftDrawable.getIntrinsicHeight() / 2;
+        drawablePos[0] = getPaddingLeft();
+        drawablePos[1] = getHeight() / 2 - leftDrawable.getIntrinsicHeight() / 2;
         return new Rect(drawablePos[0],
                 drawablePos[1],
                 drawablePos[0] + leftDrawable.getIntrinsicWidth(),
@@ -131,12 +129,10 @@ public class EnhancedTextView extends TextView {
     }
 
     public Rect getRightDrawableBounds() {
-        int[] wholeViewPos = new int[2];
-        getLocationInWindow(wholeViewPos);
         int[] drawablePos = new int[2];
         Drawable rightDrawable = getCompoundDrawables()[2];
-        drawablePos[0] = wholeViewPos[0] + getWidth() - getPaddingRight() - rightDrawable.getIntrinsicWidth();
-        drawablePos[1] = wholeViewPos[1] + getHeight() / 2 - rightDrawable.getIntrinsicHeight() / 2;
+        drawablePos[0] = getWidth() - getPaddingRight() - rightDrawable.getIntrinsicWidth();
+        drawablePos[1] = getHeight() / 2 - rightDrawable.getIntrinsicHeight() / 2;
         return new Rect(drawablePos[0],
                 drawablePos[1],
                 drawablePos[0] + rightDrawable.getIntrinsicWidth(),
