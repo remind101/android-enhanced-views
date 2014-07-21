@@ -55,10 +55,10 @@ public class EnhancedTextView extends TextView {
     private boolean consumeLeftDrawableTouch;
     private boolean consumeRightDrawableTouch;
 
-    private static final int LEFT = 0;
-    private static final int TOP = 1;
-    private static final int RIGHT = 2;
-    private static final int BOTTOM = 3;
+    protected static final int LEFT = 0;
+    protected static final int TOP = 1;
+    protected static final int RIGHT = 2;
+    protected static final int BOTTOM = 3;
 
     public interface OnDrawableClick {
         public void onRightDrawableClick(EnhancedTextView textView);
@@ -419,7 +419,7 @@ public class EnhancedTextView extends TextView {
             final int hspace = getWidth() - getCompoundPaddingRight() - getCompoundPaddingLeft();
             for (int i = 0; i < originalDrawables.length; i++) {
                 if (originalDrawables[i] != null) {
-                    getDrawableBounds(reusableRect, i, vspace, hspace);
+                    getDrawableBounds(i, reusableRect, vspace, hspace);
                     originalDrawables[i].setBounds(reusableRect);
                     originalDrawables[i].draw(canvas);
                 }
@@ -532,14 +532,18 @@ public class EnhancedTextView extends TextView {
     }
 
     protected Rect getDrawableBounds(int which) {
-        final int vspace = getHeight() - getCompoundPaddingBottom() - getCompoundPaddingTop();
-        final int hspace = getWidth() - getCompoundPaddingRight() - getCompoundPaddingLeft();
         Rect rect = new Rect();
-        getDrawableBounds(rect, which, vspace, hspace);
+        getDrawableBounds(which, rect);
         return rect;
     }
 
-    protected void getDrawableBounds(Rect rect, int which, int vspace, int hspace) {
+    protected void getDrawableBounds(int which, Rect rect) {
+        final int vspace = getHeight() - getCompoundPaddingBottom() - getCompoundPaddingTop();
+        final int hspace = getWidth() - getCompoundPaddingRight() - getCompoundPaddingLeft();
+        getDrawableBounds(which, rect, vspace, hspace);
+    }
+
+    protected void getDrawableBounds(int which, Rect rect, int vspace, int hspace) {
         Drawable dr = isDrawableSticky ? originalDrawables[which] : getCompoundDrawables()[which];
         if (dr == null) {
             return;
