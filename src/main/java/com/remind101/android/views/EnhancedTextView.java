@@ -55,6 +55,11 @@ public class EnhancedTextView extends TextView {
     private boolean consumeLeftDrawableTouch;
     private boolean consumeRightDrawableTouch;
 
+    protected static final int LEFT = 0;
+    protected static final int TOP = 1;
+    protected static final int RIGHT = 2;
+    protected static final int BOTTOM = 3;
+
     public interface OnDrawableClick {
         public void onRightDrawableClick(EnhancedTextView textView);
 
@@ -74,7 +79,8 @@ public class EnhancedTextView extends TextView {
         if (getCompoundDrawables() != null) {
             Drawable rightDrawable = getCompoundDrawables()[2];
             if (rightDrawable != null) {
-                boolean isInRightDrawable = event.getX() > (getWidth() - getPaddingRight() - rightDrawable.getIntrinsicWidth());
+                Rect rightBounds = getRightDrawableBounds();
+                boolean isInRightDrawable = rightBounds.contains((int) event.getX(), (int) event.getY());
                 if (isInRightDrawable) {
                     switch (event.getAction()) {
                         case MotionEvent.ACTION_DOWN:
@@ -95,7 +101,8 @@ public class EnhancedTextView extends TextView {
 
             Drawable leftDrawable = getCompoundDrawables()[0];
             if (leftDrawable != null) {
-                boolean isInLeftDrawable = event.getX() < (getPaddingLeft() + leftDrawable.getIntrinsicWidth());
+                Rect leftBounds = getLeftDrawableBounds();
+                boolean isInLeftDrawable = leftBounds.contains((int) event.getX(), (int) event.getY());
                 if (isInLeftDrawable) {
                     switch (event.getAction()) {
                         case MotionEvent.ACTION_DOWN:
@@ -118,25 +125,19 @@ public class EnhancedTextView extends TextView {
     }
 
     public Rect getLeftDrawableBounds() {
-        int[] drawablePos = new int[2];
-        Drawable leftDrawable = getCompoundDrawables()[0];
-        drawablePos[0] = getPaddingLeft();
-        drawablePos[1] = getHeight() / 2 - leftDrawable.getIntrinsicHeight() / 2;
-        return new Rect(drawablePos[0],
-                drawablePos[1],
-                drawablePos[0] + leftDrawable.getIntrinsicWidth(),
-                drawablePos[1] + leftDrawable.getIntrinsicHeight());
+        return getDrawableBounds(LEFT);
     }
 
     public Rect getRightDrawableBounds() {
-        int[] drawablePos = new int[2];
-        Drawable rightDrawable = getCompoundDrawables()[2];
-        drawablePos[0] = getWidth() - getPaddingRight() - rightDrawable.getIntrinsicWidth();
-        drawablePos[1] = getHeight() / 2 - rightDrawable.getIntrinsicHeight() / 2;
-        return new Rect(drawablePos[0],
-                drawablePos[1],
-                drawablePos[0] + rightDrawable.getIntrinsicWidth(),
-                drawablePos[1] + rightDrawable.getIntrinsicHeight());
+        return getDrawableBounds(RIGHT);
+    }
+
+    public Rect getTopDrawableBounds() {
+        return getDrawableBounds(TOP);
+    }
+
+    public Rect getBottomDrawableBounds() {
+        return getDrawableBounds(BOTTOM);
     }
 
     public EnhancedTextView(Context context) {
@@ -414,33 +415,14 @@ public class EnhancedTextView extends TextView {
 
         if (isDrawableSticky && originalDrawables != null) {
             textPaint.getTextBounds(restoreText.toString(), 0, restoreText.length(), textBounds);
-            if (originalDrawables[0] != null) {
-                int drawableLeft = getWidth() / 2 - (originalDrawables[0].getIntrinsicWidth() + getCompoundDrawablePadding() + textBounds.width()) / 2;
-                int drawableTop = getHeight() / 2 - originalDrawables[0].getIntrinsicHeight() / 2;
-                originalDrawables[0].setBounds(drawableLeft, drawableTop,
-                        drawableLeft + originalDrawables[0].getIntrinsicWidth(), drawableTop + originalDrawables[0].getIntrinsicHeight());
-                originalDrawables[0].draw(canvas);
-            }
-            if (originalDrawables[1] != null) {
-                int drawableLeft = getWidth() / 2 - originalDrawables[1].getIntrinsicWidth() / 2;
-                int drawableTop = getHeight() / 2 - (textBounds.height() + getCompoundDrawablePadding() + originalDrawables[1].getIntrinsicHeight()) / 2;
-                originalDrawables[1].setBounds(drawableLeft, drawableTop,
-                        drawableLeft + originalDrawables[1].getIntrinsicWidth(), drawableTop + originalDrawables[1].getIntrinsicHeight());
-                originalDrawables[1].draw(canvas);
-            }
-            if (originalDrawables[2] != null) {
-                int drawableLeft = getWidth() / 2 + (originalDrawables[2].getIntrinsicWidth() + getCompoundDrawablePadding() + textBounds.width()) / 2 - originalDrawables[2].getIntrinsicWidth();
-                int drawableTop = getHeight() / 2 - originalDrawables[2].getIntrinsicHeight() / 2;
-                originalDrawables[2].setBounds(drawableLeft, drawableTop,
-                        drawableLeft + originalDrawables[2].getIntrinsicWidth(), drawableTop + originalDrawables[2].getIntrinsicHeight());
-                originalDrawables[2].draw(canvas);
-            }
-            if (originalDrawables[3] != null) {
-                int drawableLeft = getWidth() / 2 - originalDrawables[3].getIntrinsicWidth() / 2;
-                int drawableTop = getHeight() / 2 + (textBounds.height() + getCompoundDrawablePadding() + originalDrawables[3].getIntrinsicHeight()) / 2 - originalDrawables[3].getIntrinsicHeight();
-                originalDrawables[3].setBounds(drawableLeft, drawableTop,
-                        drawableLeft + originalDrawables[3].getIntrinsicWidth(), drawableTop + originalDrawables[3].getIntrinsicHeight());
-                originalDrawables[3].draw(canvas);
+            final int vspace = getHeight() - getCompoundPaddingBottom() - getCompoundPaddingTop();
+            final int hspace = getWidth() - getCompoundPaddingRight() - getCompoundPaddingLeft();
+            for (int i = 0; i < originalDrawables.length; i++) {
+                if (originalDrawables[i] != null) {
+                    getDrawableBounds(i, reusableRect, vspace, hspace);
+                    originalDrawables[i].setBounds(reusableRect);
+                    originalDrawables[i].draw(canvas);
+                }
             }
         }
         if (restoreDrawables != null) {
@@ -547,6 +529,71 @@ public class EnhancedTextView extends TextView {
 
     protected boolean consumeRightDrawableTouchByDefault() {
         return true;
+    }
+
+    protected Rect getDrawableBounds(int which) {
+        Rect rect = new Rect();
+        getDrawableBounds(which, rect);
+        return rect;
+    }
+
+    protected void getDrawableBounds(int which, Rect rect) {
+        final int vspace = getHeight() - getCompoundPaddingBottom() - getCompoundPaddingTop();
+        final int hspace = getWidth() - getCompoundPaddingRight() - getCompoundPaddingLeft();
+        getDrawableBounds(which, rect, vspace, hspace);
+    }
+
+    protected void getDrawableBounds(int which, Rect rect, int vspace, int hspace) {
+        Drawable dr = isDrawableSticky ? originalDrawables[which] : getCompoundDrawables()[which];
+        if (dr == null) {
+            return;
+        }
+        switch (which) {
+            case LEFT:
+                if (isDrawableSticky) {
+                    rect.left = getScrollX() + (getWidth() - dr.getIntrinsicWidth()
+                            - getCompoundDrawablePadding() - textBounds.width()) / 2;
+                } else {
+                    rect.left = getScrollX() + getPaddingLeft();
+                }
+                rect.top = getScrollY() + getCompoundPaddingTop()
+                        + (vspace - dr.getIntrinsicHeight()) / 2;
+                break;
+            case RIGHT:
+                if (isDrawableSticky) {
+                    rect.left = getScrollX() + (getWidth() + getCompoundDrawablePadding()
+                            + textBounds.width() - dr.getIntrinsicWidth() ) / 2;
+                } else {
+                    rect.left = getScrollX() + getWidth()
+                            - getPaddingRight() - dr.getIntrinsicWidth();
+                }
+                rect.top = getScrollY() + getCompoundPaddingTop()
+                        + (vspace - dr.getIntrinsicHeight()) / 2;
+                break;
+            case TOP:
+                rect.left = getScrollX() + getCompoundPaddingLeft()
+                        + (hspace - dr.getIntrinsicWidth()) / 2;
+                if (isDrawableSticky) {
+                    rect.top = getScrollY() + (getHeight() - textBounds.height()
+                            - getCompoundDrawablePadding() - dr.getIntrinsicHeight()) / 2;
+                } else {
+                    rect.top = getScrollY() + getPaddingTop();
+                }
+                break;
+            case BOTTOM:
+                rect.left = getScrollX() + getCompoundPaddingLeft()
+                        + (hspace - dr.getIntrinsicWidth()) / 2;
+                if (isDrawableSticky) {
+                    rect.top = getScrollY() + (getHeight() + textBounds.height()
+                            + getCompoundDrawablePadding() - dr.getIntrinsicHeight()) / 2;
+                } else {
+                    rect.top = getScrollY() + getHeight()
+                            - getPaddingBottom() - dr.getIntrinsicHeight();
+                }
+                break;
+        }
+        rect.right = rect.left + dr.getIntrinsicWidth();
+        rect.bottom = rect.top + dr.getIntrinsicHeight();
     }
 
     public static class Shadow {
