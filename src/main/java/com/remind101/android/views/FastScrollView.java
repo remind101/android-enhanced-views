@@ -13,11 +13,23 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup.OnHierarchyChangeListener;
-import android.widget.*;
+import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
+import android.widget.Adapter;
+import android.widget.BaseAdapter;
+import android.widget.FrameLayout;
+import android.widget.HeaderViewListAdapter;
+import android.widget.ListView;
+
 import com.remind101.android.enhancedviews.R;
 
-
+/**
+ * FastScrollView is meant for embedding {@link ListView}s that contain a large number of
+ * items that can be indexed in some fashion. It displays a special scroll bar that allows jumping
+ * quickly to indexed sections of the list in touch-mode. Only one child can be added to this
+ * view group and it must be a {@link ListView}, with an adapter that is derived from
+ * {@link BaseAdapter}.
+ */
 public class FastScrollView extends FrameLayout
         implements OnScrollListener, OnHierarchyChangeListener {
 
