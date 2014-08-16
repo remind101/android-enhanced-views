@@ -84,7 +84,4 @@
         <attr name="PageIndicatorViewStyle" format="reference" />
     </declare-styleable>
 
-    <declare-styleable name="CircleIndicatorViewTheme">
-        <attr name="CircleIndicatorViewStyle" format="reference" />
-    </declare-styleable>
 </resources>
