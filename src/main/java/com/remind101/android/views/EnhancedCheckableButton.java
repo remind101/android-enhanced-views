@@ -7,6 +7,7 @@ import android.text.method.MovementMethod;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.Checkable;
+
 import com.remind101.android.enhancedviews.R;
 
 /**
@@ -24,7 +25,7 @@ public class EnhancedCheckableButton extends EnhancedTextView implements Checkab
     private OnCheckChangeListener onCheckedChangeListener;
 
     public interface OnCheckChangeListener {
-        public void onPositiveChange(int viewId);
+        public void onStateChange(View view);
     }
 
     public EnhancedCheckableButton(Context context) {
@@ -76,11 +77,9 @@ public class EnhancedCheckableButton extends EnhancedTextView implements Checkab
 
     @Override
     public void onClick(View v) {
-        if (!this.isChecked) {
-            toggle();
-            if (onCheckedChangeListener != null) {
-                onCheckedChangeListener.onPositiveChange(this.getId());
-            }
+        toggle();
+        if (onCheckedChangeListener != null) {
+            onCheckedChangeListener.onStateChange(this);
         }
     }
 
