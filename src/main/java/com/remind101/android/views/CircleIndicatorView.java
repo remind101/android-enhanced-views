@@ -138,14 +138,14 @@ public class CircleIndicatorView extends View {
                 left = getPaddingLeft() + (i * activeDrawableWidth) + (i * drawablePadding);
                 top = getPaddingTop();
                 right = left + activeDrawableWidth;
-                bottom = activeDrawableHeight + getPaddingBottom();
+                bottom = activeDrawableHeight + top;
                 activeDrawable.setBounds(left, top, right, bottom);
                 activeDrawable.draw(canvas);
             } else {
                 left = getPaddingLeft() + (i * inActiveDrawableWidth) + (i * drawablePadding);
                 top = getPaddingTop();
                 right = left + inActiveDrawableWidth;
-                bottom = inActiveDrawableHeight + getPaddingBottom();
+                bottom = inActiveDrawableHeight + top;
                 inactiveDrawable.setBounds(left, top, right, bottom);
                 inactiveDrawable.draw(canvas);
             }
