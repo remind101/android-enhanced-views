@@ -4,8 +4,16 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
-import android.graphics.*;
+import android.graphics.Bitmap;
+import android.graphics.BlurMaskFilter;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Paint.Join;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -17,8 +25,8 @@ import android.util.AttributeSet;
 import android.util.Pair;
 import android.view.Gravity;
 import android.view.MotionEvent;
-import android.view.View;
 import android.widget.TextView;
+
 import com.remind101.android.enhancedviews.R;
 
 import java.lang.reflect.Field;
@@ -84,6 +92,7 @@ public class EnhancedTextView extends TextView {
                 if (isInRightDrawable) {
                     switch (event.getAction()) {
                         case MotionEvent.ACTION_DOWN:
+                        case MotionEvent.ACTION_MOVE:
                             rightDrawable.setState(new int[]{android.R.attr.state_pressed});
                             rightDrawable.invalidateSelf();
                             break;
@@ -95,8 +104,13 @@ public class EnhancedTextView extends TextView {
                             }
                             break;
                     }
-                    return consumeRightDrawableTouch || super.onTouchEvent(event);
+                } else {
+                    if (event.getAction() == MotionEvent.ACTION_MOVE) {
+                        rightDrawable.setState(null);
+                        rightDrawable.invalidateSelf();
+                    }
                 }
+                return consumeRightDrawableTouch || super.onTouchEvent(event);
             }
 
             Drawable leftDrawable = getCompoundDrawables()[0];
@@ -106,6 +120,7 @@ public class EnhancedTextView extends TextView {
                 if (isInLeftDrawable) {
                     switch (event.getAction()) {
                         case MotionEvent.ACTION_DOWN:
+                        case MotionEvent.ACTION_MOVE:
                             leftDrawable.setState(new int[]{android.R.attr.state_pressed});
                             leftDrawable.invalidateSelf();
                             break;
@@ -117,8 +132,13 @@ public class EnhancedTextView extends TextView {
                             }
                             break;
                     }
-                    return consumeLeftDrawableTouch || super.onTouchEvent(event);
+                } else {
+                    if (event.getAction() == MotionEvent.ACTION_MOVE) {
+                        leftDrawable.setState(null);
+                        leftDrawable.invalidateSelf();
+                    }
                 }
+                return consumeLeftDrawableTouch || super.onTouchEvent(event);
             }
         }
         return super.onTouchEvent(event);
@@ -562,7 +582,7 @@ public class EnhancedTextView extends TextView {
             case RIGHT:
                 if (isDrawableSticky) {
                     rect.left = getScrollX() + (getWidth() + getCompoundDrawablePadding()
-                            + textBounds.width() - dr.getIntrinsicWidth() ) / 2;
+                            + textBounds.width() - dr.getIntrinsicWidth()) / 2;
                 } else {
                     rect.left = getScrollX() + getWidth()
                             - getPaddingRight() - dr.getIntrinsicWidth();
