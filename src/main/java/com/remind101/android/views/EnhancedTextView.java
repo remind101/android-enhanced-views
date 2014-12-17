@@ -104,13 +104,13 @@ public class EnhancedTextView extends TextView {
                             }
                             break;
                     }
+                    return consumeRightDrawableTouch || super.onTouchEvent(event);
                 } else {
-                    if (event.getAction() == MotionEvent.ACTION_MOVE) {
+                    if (rightDrawable.getState() != null) {
                         rightDrawable.setState(null);
                         rightDrawable.invalidateSelf();
                     }
                 }
-                return consumeRightDrawableTouch || super.onTouchEvent(event);
             }
 
             Drawable leftDrawable = getCompoundDrawables()[0];
@@ -132,13 +132,13 @@ public class EnhancedTextView extends TextView {
                             }
                             break;
                     }
+                    return consumeLeftDrawableTouch || super.onTouchEvent(event);
                 } else {
-                    if (event.getAction() == MotionEvent.ACTION_MOVE) {
+                    if (leftDrawable.getState() != null) {
                         leftDrawable.setState(null);
                         leftDrawable.invalidateSelf();
                     }
                 }
-                return consumeLeftDrawableTouch || super.onTouchEvent(event);
             }
         }
         return super.onTouchEvent(event);
