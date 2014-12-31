@@ -1,9 +1,8 @@
 package com.remind101.android.views;
 
 import android.content.Context;
-import android.text.method.ArrowKeyMovementMethod;
-import android.text.method.MovementMethod;
 import android.util.AttributeSet;
+
 import com.remind101.android.enhancedviews.R;
 
 /**
@@ -25,14 +24,6 @@ public class EnhancedButton extends EnhancedTextView {
     public EnhancedButton(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
 
-    }
-
-    /**
-     * Because of this - the field auto-store the text of it
-     */
-    @Override
-    protected MovementMethod getDefaultMovementMethod() {
-        return ArrowKeyMovementMethod.getInstance();
     }
 
     @Override

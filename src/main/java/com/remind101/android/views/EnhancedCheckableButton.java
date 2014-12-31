@@ -2,8 +2,6 @@ package com.remind101.android.views;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.text.method.ArrowKeyMovementMethod;
-import android.text.method.MovementMethod;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.Checkable;
@@ -46,14 +44,6 @@ public class EnhancedCheckableButton extends EnhancedTextView implements Checkab
             }
             a.recycle();
         }
-    }
-
-    /**
-     * Because of this - the field auto-store the text of it
-     */
-    @Override
-    protected MovementMethod getDefaultMovementMethod() {
-        return ArrowKeyMovementMethod.getInstance();
     }
 
     @Override

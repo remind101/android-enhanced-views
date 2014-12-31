@@ -7,10 +7,9 @@ import android.text.Editable;
 import android.text.Selection;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.text.method.ArrowKeyMovementMethod;
-import android.text.method.MovementMethod;
 import android.util.AttributeSet;
 import android.view.View;
+
 import com.remind101.android.enhancedviews.R;
 
 /**
@@ -100,11 +99,6 @@ public class EnhancedEditText extends EnhancedTextView implements View.OnFocusCh
     @Override
     protected boolean getDefaultEditable() {
         return true;
-    }
-
-    @Override
-    protected MovementMethod getDefaultMovementMethod() {
-        return ArrowKeyMovementMethod.getInstance();
     }
 
     @Override
