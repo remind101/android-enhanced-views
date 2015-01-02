@@ -27,14 +27,6 @@ public class EnhancedButton extends EnhancedTextView {
 
     }
 
-    /**
-     * Because of this - the field auto-store the text of it
-     */
-    @Override
-    protected MovementMethod getDefaultMovementMethod() {
-        return ArrowKeyMovementMethod.getInstance();
-    }
-
     @Override
     protected boolean consumeRightDrawableTouchByDefault() {
         return false;
