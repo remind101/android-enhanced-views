@@ -103,11 +103,6 @@ public class EnhancedEditText extends EnhancedTextView implements View.OnFocusCh
     }
 
     @Override
-    protected MovementMethod getDefaultMovementMethod() {
-        return ArrowKeyMovementMethod.getInstance();
-    }
-
-    @Override
     public Editable getText() {
         return (Editable) super.getText();
     }

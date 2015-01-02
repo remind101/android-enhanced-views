@@ -48,14 +48,6 @@ public class EnhancedCheckableButton extends EnhancedTextView implements Checkab
         }
     }
 
-    /**
-     * Because of this - the field auto-store the text of it
-     */
-    @Override
-    protected MovementMethod getDefaultMovementMethod() {
-        return ArrowKeyMovementMethod.getInstance();
-    }
-
     @Override
     public boolean isChecked() {
         return isChecked;
