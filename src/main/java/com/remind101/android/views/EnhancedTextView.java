@@ -19,9 +19,11 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.PaintDrawable;
 import android.os.Build;
+import android.text.Layout;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.FloatMath;
 import android.util.Pair;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -572,7 +574,7 @@ public class EnhancedTextView extends TextView {
             case LEFT:
                 if (isDrawableSticky) {
                     rect.left = getScrollX() + (getWidth() - dr.getIntrinsicWidth()
-                            - getCompoundDrawablePadding() - textBounds.width()) / 2;
+                            - getCompoundDrawablePadding() - getMaxLineWidth()) / 2;
                 } else {
                     rect.left = getScrollX() + getPaddingLeft();
                 }
@@ -582,7 +584,7 @@ public class EnhancedTextView extends TextView {
             case RIGHT:
                 if (isDrawableSticky) {
                     rect.left = getScrollX() + (getWidth() + getCompoundDrawablePadding()
-                            + textBounds.width() - dr.getIntrinsicWidth()) / 2;
+                            + getMaxLineWidth() - dr.getIntrinsicWidth()) / 2;
                 } else {
                     rect.left = getScrollX() + getWidth()
                             - getPaddingRight() - dr.getIntrinsicWidth();
@@ -614,6 +616,23 @@ public class EnhancedTextView extends TextView {
         }
         rect.right = rect.left + dr.getIntrinsicWidth();
         rect.bottom = rect.top + dr.getIntrinsicHeight();
+    }
+
+    private int getMaxLineWidth() {
+        Layout layout = getLayout();
+        if (layout != null) {
+            int lines = layout.getLineCount();
+            if (lines > 1) {
+                float maxWidth = 0f;
+                for (int i = 0; i < lines; i++) {
+                    if (layout.getLineWidth(i) > maxWidth) {
+                        maxWidth = layout.getLineWidth(i);
+                    }
+                }
+                return (int) FloatMath.ceil(maxWidth);
+            }
+        }
+        return textBounds.width();
     }
 
     public static class Shadow {
