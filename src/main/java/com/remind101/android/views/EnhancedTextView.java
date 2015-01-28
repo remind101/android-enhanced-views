@@ -86,7 +86,7 @@ public class EnhancedTextView extends TextView {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (getCompoundDrawables() != null) {
+        if (onDrawableClickListener != null) {
             Drawable rightDrawable = getCompoundDrawables()[2];
             if (rightDrawable != null) {
                 Rect rightBounds = getRightDrawableBounds();
@@ -101,9 +101,7 @@ public class EnhancedTextView extends TextView {
                         case MotionEvent.ACTION_UP:
                             rightDrawable.setState(null);
                             rightDrawable.invalidateSelf();
-                            if (onDrawableClickListener != null) {
-                                onDrawableClickListener.onRightDrawableClick(this);
-                            }
+                            onDrawableClickListener.onRightDrawableClick(this);
                             break;
                     }
                     return consumeRightDrawableTouch || super.onTouchEvent(event);
@@ -129,9 +127,7 @@ public class EnhancedTextView extends TextView {
                         case MotionEvent.ACTION_UP:
                             leftDrawable.setState(null);
                             leftDrawable.invalidateSelf();
-                            if (onDrawableClickListener != null) {
-                                onDrawableClickListener.onLeftDrawableClick(this);
-                            }
+                            onDrawableClickListener.onLeftDrawableClick(this);
                             break;
                     }
                     return consumeLeftDrawableTouch || super.onTouchEvent(event);
