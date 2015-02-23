@@ -3,6 +3,7 @@ package com.remind101.android.views;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
@@ -22,6 +23,9 @@ public class CircleIndicatorView extends View {
     private int inActiveDrawableHeight = 0;
 
     private int drawablePadding;
+    private float radius;
+    private Paint[] activePaint;
+    private Paint inactivePaint;
 
     public CircleIndicatorView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -33,6 +37,21 @@ public class CircleIndicatorView extends View {
         TypedArray a = getContext().getTheme().obtainStyledAttributes(attrs, R.styleable.CircleIndicatorView, 0, 0);
         try {
             pageCount = a.getInteger(R.styleable.CircleIndicatorView_circleCount, 1);
+            radius = a.getDimension(R.styleable.CircleIndicatorView_radius, 0);
+            int inactiveColor = a.getColor(R.styleable.CircleIndicatorView_inactiveColor, 0);
+            inactivePaint = new Paint();
+            inactivePaint.setColor(inactiveColor);
+            inactivePaint.setStyle(Paint.Style.FILL);
+            int activeColorRes = a.getResourceId(R.styleable.CircleIndicatorView_activeColor, 0);
+            int[] colorsArray = getResources().getIntArray(activeColorRes);
+            activePaint = new Paint[colorsArray.length];
+            for (int i = 0; i < colorsArray.length; i++) {
+                int color = colorsArray[i];
+                Paint paint = new Paint();
+                paint.setStyle(Paint.Style.FILL);
+                paint.setColor(color);
+                activePaint[i] = paint;
+            }
             activeDrawable = a.getDrawable(R.styleable.CircleIndicatorView_activeDrawable);
             if (activeDrawable != null) {
                 activeDrawableWidth = activeDrawable.getIntrinsicWidth();
@@ -101,11 +120,15 @@ public class CircleIndicatorView extends View {
         int specSize = MeasureSpec.getSize(measureSpec);
 
         if (specMode == MeasureSpec.EXACTLY) {
-            result = specSize;
+            return specSize;
         } else {
-            result = getPaddingLeft() + getPaddingRight() + ((pageCount - 1) * inActiveDrawableWidth) + activeDrawableWidth + ((pageCount - 1) * drawablePadding);
+            if (radius <= 0) {
+                result = getPaddingLeft() + getPaddingRight() + ((pageCount - 1) * inActiveDrawableWidth) + activeDrawableWidth + ((pageCount - 1) * drawablePadding);
+            } else {
+                result = (int) (getPaddingLeft() + getPaddingRight() + (2 * radius * pageCount) + drawablePadding * (pageCount - 1));
+            }
             if (specMode == MeasureSpec.AT_MOST) {
-                result = Math.min(result, specSize);
+                return Math.min(result, specSize);
             }
         }
         return result;
@@ -116,11 +139,15 @@ public class CircleIndicatorView extends View {
         int specMode = MeasureSpec.getMode(measureSpec);
         int specSize = MeasureSpec.getSize(measureSpec);
         if (specMode == MeasureSpec.EXACTLY) {
-            result = specSize;
+            return specSize;
         } else {
-            result = getPaddingTop() + getPaddingBottom() + Math.max(inActiveDrawableHeight, activeDrawableHeight);
+            if (radius <= 0) {
+                result = getPaddingTop() + getPaddingBottom() + Math.max(inActiveDrawableHeight, activeDrawableHeight);
+            } else {
+                result = (int) (getPaddingTop() + getPaddingBottom() + 2 * radius);
+            }
             if (specMode == MeasureSpec.AT_MOST) {
-                result = Math.min(result, specSize);
+                return Math.min(result, specSize);
             }
         }
         return result;
@@ -135,19 +162,31 @@ public class CircleIndicatorView extends View {
 
         for (i = 0; i < pageCount; i++) {
             if (i == currentActive) {
-                left = getPaddingLeft() + (i * activeDrawableWidth) + (i * drawablePadding);
-                top = getPaddingTop();
-                right = left + activeDrawableWidth;
-                bottom = activeDrawableHeight + top;
-                activeDrawable.setBounds(left, top, right, bottom);
-                activeDrawable.draw(canvas);
+                if (radius <= 0) {
+                    left = getPaddingLeft() + (i * activeDrawableWidth) + (i * drawablePadding);
+                    top = getPaddingTop();
+                    right = left + activeDrawableWidth;
+                    bottom = activeDrawableHeight + top;
+                    activeDrawable.setBounds(left, top, right, bottom);
+                    activeDrawable.draw(canvas);
+                } else {
+                    float cx = getPaddingRight() + radius + (2 * radius * i) + (drawablePadding * i);
+                    float cy = getPaddingTop() + radius;
+                    canvas.drawCircle(cx, cy, radius, activePaint[i - activePaint.length * (i / activePaint.length)]);
+                }
             } else {
-                left = getPaddingLeft() + (i * inActiveDrawableWidth) + (i * drawablePadding);
-                top = getPaddingTop();
-                right = left + inActiveDrawableWidth;
-                bottom = inActiveDrawableHeight + top;
-                inactiveDrawable.setBounds(left, top, right, bottom);
-                inactiveDrawable.draw(canvas);
+                if (radius <= 0) {
+                    left = getPaddingLeft() + (i * inActiveDrawableWidth) + (i * drawablePadding);
+                    top = getPaddingTop();
+                    right = left + inActiveDrawableWidth;
+                    bottom = inActiveDrawableHeight + top;
+                    inactiveDrawable.setBounds(left, top, right, bottom);
+                    inactiveDrawable.draw(canvas);
+                } else {
+                    float cx = getPaddingRight() + radius + (2 * radius * i) + (drawablePadding * i);
+                    float cy = getPaddingTop() + radius;
+                    canvas.drawCircle(cx, cy, radius, inactivePaint);
+                }
             }
         }
     }

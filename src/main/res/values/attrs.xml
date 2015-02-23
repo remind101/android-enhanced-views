@@ -55,6 +55,9 @@
         <attr name="drawablePadding" format="dimension" />
         <attr name="activeDrawable" format="reference" />
         <attr name="inActiveDrawable" format="reference" />
+        <attr name="radius" format="dimension" />
+        <attr name="inactiveColor" format="color" />
+        <attr name="activeColor" format="reference" />
     </declare-styleable>
 
     <declare-styleable name="FastScrollView">
