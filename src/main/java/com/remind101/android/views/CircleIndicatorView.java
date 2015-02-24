@@ -43,7 +43,7 @@ public class CircleIndicatorView extends View {
             inactivePaint.setColor(inactiveColor);
             inactivePaint.setStyle(Paint.Style.FILL);
             int activeColorRes = a.getResourceId(R.styleable.CircleIndicatorView_activeColor, 0);
-            int[] colorsArray = getResources().getIntArray(activeColorRes);
+            int[] colorsArray = a.getResources().getIntArray(activeColorRes);
             activePaint = new Paint[colorsArray.length];
             for (int i = 0; i < colorsArray.length; i++) {
                 int color = colorsArray[i];
