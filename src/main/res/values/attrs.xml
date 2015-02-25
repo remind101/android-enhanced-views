@@ -58,6 +58,11 @@
         <attr name="radius" format="dimension" />
         <attr name="inactiveColor" format="color" />
         <attr name="activeColor" format="reference" />
+        <attr name="gravity" format="enum">
+            <enum name="top" value="48" />
+            <enum name="center" value="17" />
+            <enum name="bottom" value="80" />
+        </attr>
     </declare-styleable>
 
     <declare-styleable name="FastScrollView">
