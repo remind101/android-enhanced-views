@@ -108,6 +108,19 @@ public class CircleIndicatorView extends View {
         this.activeDrawable = activeDrawable;
     }
 
+    public void setActiveColorList(int activeColorRes) {
+        int[] colorsArray = getContext().getResources().getIntArray(activeColorRes);
+        activePaint = new Paint[colorsArray.length];
+        for (int i = 0; i < colorsArray.length; i++) {
+            int color = colorsArray[i];
+            Paint paint = new Paint();
+            paint.setStyle(Paint.Style.FILL);
+            paint.setColor(color);
+            activePaint[i] = paint;
+        }
+        invalidate();
+    }
+
     /**
      * This calculates minimum view estate needed for placing it's content (dots with numbers) when size is not set exactly in xml
      */
