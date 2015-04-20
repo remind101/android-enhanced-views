@@ -34,6 +34,7 @@
 
     <declare-styleable name="EnhancedEditText">
         <attr name="clearable" format="boolean" />
+        <attr name="clearDrawable" format="reference" />
     </declare-styleable>
 
     <declare-styleable name="EnhancedCheckableButton">

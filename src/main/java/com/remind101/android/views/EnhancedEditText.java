@@ -11,6 +11,7 @@ import android.text.method.ArrowKeyMovementMethod;
 import android.text.method.MovementMethod;
 import android.util.AttributeSet;
 import android.view.View;
+
 import com.remind101.android.enhancedviews.R;
 
 /**
@@ -24,6 +25,7 @@ public class EnhancedEditText extends EnhancedTextView implements View.OnFocusCh
     private Drawable xD;
     private boolean isCleanable;
     private OnFocusChangeListener f;
+    private Drawable originalRightDrawable;
 
 
     public EnhancedEditText(Context context) {
@@ -40,9 +42,13 @@ public class EnhancedEditText extends EnhancedTextView implements View.OnFocusCh
             TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.EnhancedEditText, defStyle, android.R.style.Widget_EditText);
             if (a.getBoolean(R.styleable.EnhancedEditText_clearable, false)) {
                 isCleanable = true;
-                xD = getCompoundDrawables()[2];
-                if (getCompoundDrawables()[2] == null) {
-                    xD = getResources().getDrawable(android.R.drawable.presence_offline);
+                originalRightDrawable = getCompoundDrawables()[2];
+                xD = a.getDrawable(R.styleable.EnhancedEditText_clearDrawable);
+                if (xD == null) {
+                    xD = getCompoundDrawables()[2];
+                    if (getCompoundDrawables()[2] == null) {
+                        xD = getResources().getDrawable(android.R.drawable.presence_offline);
+                    }
                 }
                 xD.setBounds(0, 0, xD.getIntrinsicWidth(), xD.getIntrinsicHeight());
                 setClearIconVisible(false);
@@ -92,7 +98,7 @@ public class EnhancedEditText extends EnhancedTextView implements View.OnFocusCh
     }
 
     protected void setClearIconVisible(boolean visible) {
-        Drawable x = visible ? xD : null;
+        Drawable x = visible ? xD : originalRightDrawable;
         setCompoundDrawables(getCompoundDrawables()[0],
                 getCompoundDrawables()[1], x, getCompoundDrawables()[3]);
     }
