@@ -22,10 +22,11 @@ import com.remind101.android.enhancedviews.R;
  */
 public class EnhancedEditText extends EnhancedTextView implements View.OnFocusChangeListener, EnhancedTextView.OnDrawableClick {
 
-    private Drawable xD;
+    private Drawable originalLeftDrawable;
+    private Drawable originalRightDrawable;
+    private Drawable xDrawable;
     private boolean isCleanable;
     private OnFocusChangeListener f;
-    private Drawable originalRightDrawable;
 
 
     public EnhancedEditText(Context context) {
@@ -43,14 +44,15 @@ public class EnhancedEditText extends EnhancedTextView implements View.OnFocusCh
             if (a.getBoolean(R.styleable.EnhancedEditText_clearable, false)) {
                 isCleanable = true;
                 originalRightDrawable = getCompoundDrawables()[2];
-                xD = a.getDrawable(R.styleable.EnhancedEditText_clearDrawable);
-                if (xD == null) {
-                    xD = getCompoundDrawables()[2];
-                    if (getCompoundDrawables()[2] == null) {
-                        xD = getResources().getDrawable(android.R.drawable.presence_offline);
+                originalLeftDrawable = getCompoundDrawables()[0];
+                xDrawable = a.getDrawable(R.styleable.EnhancedEditText_clearDrawable);
+                if (xDrawable == null) {
+                    xDrawable = getCompoundDrawables()[2];
+                    if (xDrawable == null) {
+                        xDrawable = getResources().getDrawable(android.R.drawable.presence_offline);
                     }
                 }
-                xD.setBounds(0, 0, xD.getIntrinsicWidth(), xD.getIntrinsicHeight());
+                xDrawable.setBounds(0, 0, xDrawable.getIntrinsicWidth(), xDrawable.getIntrinsicHeight());
                 setClearIconVisible(false);
                 super.setOnDrawableClickListener(this);
                 super.setOnFocusChangeListener(this);
@@ -98,9 +100,13 @@ public class EnhancedEditText extends EnhancedTextView implements View.OnFocusCh
     }
 
     protected void setClearIconVisible(boolean visible) {
-        Drawable x = visible ? xD : originalRightDrawable;
-        setCompoundDrawables(getCompoundDrawables()[0],
-                getCompoundDrawables()[1], x, getCompoundDrawables()[3]);
+        Drawable rightDrawable = visible ? xDrawable : originalRightDrawable;
+        Drawable leftDrawable = visible && originalRightDrawable != null ? originalRightDrawable : originalLeftDrawable;
+
+        setCompoundDrawables(leftDrawable,
+                getCompoundDrawables()[1],
+                rightDrawable,
+                getCompoundDrawables()[3]);
     }
 
     @Override
@@ -142,6 +148,7 @@ public class EnhancedEditText extends EnhancedTextView implements View.OnFocusCh
         Selection.extendSelection(getText(), index);
     }
 
+
     @Override
     public void setEllipsize(TextUtils.TruncateAt ellipsis) {
         if (ellipsis == TextUtils.TruncateAt.MARQUEE) {
@@ -150,7 +157,6 @@ public class EnhancedEditText extends EnhancedTextView implements View.OnFocusCh
         }
         super.setEllipsize(ellipsis);
     }
-
 
     @Override
     public void onRightDrawableClick(EnhancedTextView textView) {
