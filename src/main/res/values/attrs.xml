@@ -30,6 +30,19 @@
             <enum name="bevel" value="1" />
             <enum name="round" value="2" />
         </attr>
+
+        <attr name="tokenBackgroundColor" format="color" />
+        <attr name="tokenSelectedBackgroundColor" format="color" />
+
+        <attr name="tokenBorderColor" format="color" />
+        <attr name="tokenSelectedBorderColor" format="color" />
+
+        <attr name="tokenTextColor" format="color" />
+        <attr name="tokenSelectedTextColor" format="color" />
+
+        <attr name="tokenBorderRadius" format="dimension" />
+        <attr name="tokenVerticalPadding" format="dimension" />
+        <attr name="tokenHorizontalPadding" format="dimension" />
     </declare-styleable>
 
     <declare-styleable name="EnhancedEditText">

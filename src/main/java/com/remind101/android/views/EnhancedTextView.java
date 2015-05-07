@@ -65,6 +65,18 @@ public class EnhancedTextView extends TextView {
     private boolean consumeLeftDrawableTouch;
     private boolean consumeRightDrawableTouch;
 
+    private int tokenBackgroundColor;
+    private int tokenBorderColor;
+    private int tokenTextColor;
+
+    private int tokenSelectedTextColor;
+    private int tokenSelectedBackgroundColor;
+    private int tokenSelectedBorderColor;
+
+    private int tokenVerticalPadding;
+    private int tokenHorizontalPadding;
+    private int tokenBorderRadius;
+
     protected static final int LEFT = 0;
     protected static final int TOP = 1;
     protected static final int RIGHT = 2;
@@ -281,6 +293,17 @@ public class EnhancedTextView extends TextView {
             consumeRightDrawableTouch = a.getBoolean(
                     R.styleable.EnhancedTextView_consumeRightDrawableTouch,
                     consumeRightDrawableTouchByDefault());
+
+            tokenBackgroundColor = a.getColor(R.styleable.EnhancedTextView_tokenBackgroundColor, 0);
+            tokenSelectedBackgroundColor = a.getColor(R.styleable.EnhancedTextView_tokenSelectedBackgroundColor, tokenBackgroundColor);
+            tokenBorderColor = a.getColor(R.styleable.EnhancedTextView_tokenBorderColor, 0);
+            tokenSelectedBorderColor = a.getColor(R.styleable.EnhancedTextView_tokenSelectedBorderColor, tokenBorderColor);
+            tokenTextColor = a.getColor(R.styleable.EnhancedTextView_tokenTextColor, -1);
+            tokenSelectedTextColor = a.getColor(R.styleable.EnhancedTextView_tokenSelectedTextColor, tokenTextColor);
+            tokenVerticalPadding = a.getDimensionPixelSize(R.styleable.EnhancedTextView_tokenVerticalPadding, 0);
+            tokenHorizontalPadding = a.getDimensionPixelSize(R.styleable.EnhancedTextView_tokenHorizontalPadding, 0);
+            tokenBorderRadius = a.getDimensionPixelSize(R.styleable.EnhancedTextView_tokenBorderRadius, 0);
+
             a.recycle();
         }
     }
@@ -643,5 +666,42 @@ public class EnhancedTextView extends TextView {
             this.dy = dy;
             this.color = color;
         }
+    }
+
+
+    public int getTokenBackgroundColor() {
+        return tokenBackgroundColor;
+    }
+
+    public int getTokenBorderColor() {
+        return tokenBorderColor;
+    }
+
+    public int getTokenTextColor() {
+        return tokenTextColor;
+    }
+
+    public int getTokenVerticalPadding() {
+        return tokenVerticalPadding;
+    }
+
+    public int getTokenHorizontalPadding() {
+        return tokenHorizontalPadding;
+    }
+
+    public int getTokenBorderRadius() {
+        return tokenBorderRadius;
+    }
+
+    public int getTokenSelectedTextColor() {
+        return tokenSelectedTextColor;
+    }
+
+    public int getTokenSelectedBackgroundColor() {
+        return tokenSelectedBackgroundColor;
+    }
+
+    public int getTokenSelectedBorderColor() {
+        return tokenSelectedBorderColor;
     }
 }
