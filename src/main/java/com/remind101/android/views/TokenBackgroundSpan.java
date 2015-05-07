@@ -1,9 +1,19 @@
 package com.remind101.android.views;
 
+import android.annotation.TargetApi;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.os.Build;
+import android.text.Editable;
+import android.text.Selection;
+import android.text.Spannable;
+import android.text.TextWatcher;
 import android.text.style.ReplacementSpan;
+import android.view.View;
+import android.view.accessibility.AccessibilityEvent;
+
+import com.remind101.ui.listeners.OnSelectionChangeListener;
 
 public class TokenBackgroundSpan<T> extends ReplacementSpan {
     public final T tokenValue;
@@ -33,6 +43,8 @@ public class TokenBackgroundSpan<T> extends ReplacementSpan {
         borderPaint.setStrokeWidth(2);
         borderPaint.setStyle(Paint.Style.STROKE);
         borderPaint.setAntiAlias(true);
+
+        setupCallbacksForContainer();
     }
 
     @Override
@@ -76,4 +88,89 @@ public class TokenBackgroundSpan<T> extends ReplacementSpan {
     public boolean isSelected() {
         return selected;
     }
+
+    private void setupCallbacksForContainer() {
+        container.setOnSelectionChangeListener(new OnSelectionChangeListener() {
+            @Override
+            public void onSelectionChanged(EnhancedTextView view, int selectionStart, int selectionEnd) {
+                Spannable spannable = (Spannable) container.getText();
+
+                Object[] allSpans = spannable.getSpans(0, container.length(), TokenBackgroundSpan.class);
+                Object[] includedSpans = spannable.getSpans(selectionStart, selectionEnd, TokenBackgroundSpan.class);
+
+                for (Object span : allSpans) {
+                    ((TokenBackgroundSpan<T>) span).setSelected(false);
+                    expandSetSelectionIfInSpan(selectionStart, selectionEnd, spannable, span);
+                }
+
+                for (Object span : includedSpans) {
+                    if (spannable.getSpanStart(span) < selectionEnd) {
+                        ((TokenBackgroundSpan<T>) span).setSelected(true);
+                    }
+                }
+            }
+
+            private void expandSetSelectionIfInSpan(int selectionStart, int selectionEnd, Spannable spannable, Object span) {
+                int spanStart = spannable.getSpanStart(span);
+                int spanEnd = spannable.getSpanEnd(span);
+
+                boolean isPointSelection = selectionStart == selectionEnd;
+
+                int newSelectionStart = selectionStart;
+                int newSelectionEnd = selectionEnd;
+
+                final boolean startIsInSpan = selectionStart > spanStart && selectionStart < spanEnd;
+                if (startIsInSpan && isPointSelection) {
+                    newSelectionStart = spanEnd;
+                } else if (startIsInSpan && !isPointSelection) {
+                    newSelectionStart = spanStart;
+                }
+
+                final boolean endIsInSpan = selectionEnd > spanStart && selectionEnd < spanEnd;
+                if (endIsInSpan) {
+                    newSelectionEnd = spanEnd;
+                }
+
+                if (newSelectionEnd != selectionEnd || newSelectionStart != selectionStart) {
+                    Selection.setSelection(spannable, newSelectionStart, newSelectionEnd);
+                }
+            }
+        });
+
+        container.addTextChangedListener(new TextWatcher() {
+            public Object selectedSpan;
+            String replacementText;
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                final Spannable spannable = (Spannable) s;
+                final int end = start + count;
+                if (start < spannable.getSpanEnd(TokenBackgroundSpan.this) &&
+                        end > spannable.getSpanStart(TokenBackgroundSpan.this) && end <= spannable.getSpanEnd(TokenBackgroundSpan.this)) {
+                    selectedSpan = TokenBackgroundSpan.this;
+                    replacementText = s.subSequence(start, start + count).toString();
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (selectedSpan != null) {
+                    container.removeTextChangedListener(this);
+                    int start = s.getSpanStart(selectedSpan);
+                    int end = s.getSpanEnd(selectedSpan);
+                    s.removeSpan(selectedSpan);
+                    selectedSpan = null;
+                    s.delete(start, end);
+                    if (replacementText != null) {
+                        s.insert(start, replacementText);
+                    }
+                    container.addTextChangedListener(this);
+                }
+            }
+        });
+    };
 }
