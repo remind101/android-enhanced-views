@@ -30,6 +30,7 @@ import android.view.MotionEvent;
 import android.widget.TextView;
 
 import com.remind101.android.enhancedviews.R;
+import com.remind101.ui.listeners.OnSelectionChangeListener;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -59,6 +60,8 @@ public class EnhancedTextView extends TextView {
     private Rect reusableRect; // Avoid allocation inside onDraw()
     private static final PorterDuffXfermode SRC_ATOP_XFER_MODE = new PorterDuffXfermode(PorterDuff.Mode.SRC_ATOP);
     private static final PorterDuffXfermode DST_OUT_XFER_MODE = new PorterDuffXfermode(PorterDuff.Mode.DST_OUT);
+
+    private OnSelectionChangeListener onSelectionChangedListener;
 
     private OnDrawableClick onDrawableClickListener;
     private Rect textBounds;
@@ -703,5 +706,17 @@ public class EnhancedTextView extends TextView {
 
     public int getTokenSelectedBorderColor() {
         return tokenSelectedBorderColor;
+    }
+
+    public void setOnSelectionChangeListener(OnSelectionChangeListener listener) {
+        onSelectionChangedListener = listener;
+    }
+
+    @Override
+    protected void onSelectionChanged(int selStart, int selEnd) {
+        super.onSelectionChanged(selStart, selEnd);
+        if (onSelectionChangedListener!= null) {
+            onSelectionChangedListener.onSelectionChanged(this, selStart, selEnd);
+        }
     }
 }
