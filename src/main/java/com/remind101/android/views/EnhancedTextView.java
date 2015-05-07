@@ -68,13 +68,13 @@ public class EnhancedTextView extends TextView {
     private boolean consumeLeftDrawableTouch;
     private boolean consumeRightDrawableTouch;
 
-    private int tokenBackgroundColor;
-    private int tokenBorderColor;
-    private int tokenTextColor;
+    private int tokenBackgroundColor = 0;
+    private int tokenBorderColor = 0;
+    private int tokenTextColor = -1;
 
-    private int tokenSelectedTextColor;
-    private int tokenSelectedBackgroundColor;
-    private int tokenSelectedBorderColor;
+    private int tokenSelectedTextColor = -1;
+    private int tokenSelectedBackgroundColor = 0;
+    private int tokenSelectedBorderColor = 0;
 
     private int tokenVerticalPadding;
     private int tokenHorizontalPadding;
@@ -297,15 +297,31 @@ public class EnhancedTextView extends TextView {
                     R.styleable.EnhancedTextView_consumeRightDrawableTouch,
                     consumeRightDrawableTouchByDefault());
 
-            tokenBackgroundColor = a.getColor(R.styleable.EnhancedTextView_tokenBackgroundColor, 0);
-            tokenSelectedBackgroundColor = a.getColor(R.styleable.EnhancedTextView_tokenSelectedBackgroundColor, tokenBackgroundColor);
-            tokenBorderColor = a.getColor(R.styleable.EnhancedTextView_tokenBorderColor, 0);
-            tokenSelectedBorderColor = a.getColor(R.styleable.EnhancedTextView_tokenSelectedBorderColor, tokenBorderColor);
-            tokenTextColor = a.getColor(R.styleable.EnhancedTextView_tokenTextColor, -1);
-            tokenSelectedTextColor = a.getColor(R.styleable.EnhancedTextView_tokenSelectedTextColor, tokenTextColor);
-            tokenVerticalPadding = a.getDimensionPixelSize(R.styleable.EnhancedTextView_tokenVerticalPadding, 0);
-            tokenHorizontalPadding = a.getDimensionPixelSize(R.styleable.EnhancedTextView_tokenHorizontalPadding, 0);
-            tokenBorderRadius = a.getDimensionPixelSize(R.styleable.EnhancedTextView_tokenBorderRadius, 0);
+            int tokenStyle = a.getResourceId(R.styleable.EnhancedTextView_tokenStyle, -1);
+            if (tokenStyle > 0) {
+                TypedArray tokenStyleArray = getContext().obtainStyledAttributes(tokenStyle, R.styleable.EnhancedTextView);
+
+                tokenBackgroundColor = a.getColor(R.styleable.EnhancedTextView_tokenBackgroundColor, tokenStyleArray.getColor(R.styleable.EnhancedTextView_tokenBackgroundColor, 0));
+                tokenSelectedBackgroundColor = a.getColor(R.styleable.EnhancedTextView_tokenSelectedBackgroundColor, tokenStyleArray.getColor(R.styleable.EnhancedTextView_tokenSelectedBackgroundColor, tokenBackgroundColor));
+                tokenBorderColor = a.getColor(R.styleable.EnhancedTextView_tokenBorderColor, tokenStyleArray.getColor(R.styleable.EnhancedTextView_tokenBorderColor, 0));
+                tokenSelectedBorderColor = a.getColor(R.styleable.EnhancedTextView_tokenSelectedBorderColor, tokenStyleArray.getColor(R.styleable.EnhancedTextView_tokenSelectedBorderColor, tokenBorderColor));
+                tokenTextColor = a.getColor(R.styleable.EnhancedTextView_tokenTextColor, tokenStyleArray.getColor(R.styleable.EnhancedTextView_tokenTextColor, -1));
+                tokenSelectedTextColor = a.getColor(R.styleable.EnhancedTextView_tokenSelectedTextColor, tokenStyleArray.getColor(R.styleable.EnhancedTextView_tokenSelectedTextColor, tokenTextColor));
+                tokenVerticalPadding = a.getDimensionPixelSize(R.styleable.EnhancedTextView_tokenVerticalPadding, tokenStyleArray.getDimensionPixelSize(R.styleable.EnhancedTextView_tokenVerticalPadding, 0));
+                tokenHorizontalPadding = a.getDimensionPixelSize(R.styleable.EnhancedTextView_tokenHorizontalPadding, tokenStyleArray.getDimensionPixelSize(R.styleable.EnhancedTextView_tokenHorizontalPadding, 0));
+                tokenBorderRadius = a.getDimensionPixelSize(R.styleable.EnhancedTextView_tokenBorderRadius, tokenStyleArray.getDimensionPixelSize(R.styleable.EnhancedTextView_tokenBorderRadius, 0));
+                tokenStyleArray.recycle();
+            } else {
+                tokenBackgroundColor = a.getColor(R.styleable.EnhancedTextView_tokenBackgroundColor, 0);
+                tokenSelectedBackgroundColor = a.getColor(R.styleable.EnhancedTextView_tokenSelectedBackgroundColor, tokenBackgroundColor);
+                tokenBorderColor = a.getColor(R.styleable.EnhancedTextView_tokenBorderColor, 0);
+                tokenSelectedBorderColor = a.getColor(R.styleable.EnhancedTextView_tokenSelectedBorderColor, tokenBorderColor);
+                tokenTextColor = a.getColor(R.styleable.EnhancedTextView_tokenTextColor, -1);
+                tokenSelectedTextColor = a.getColor(R.styleable.EnhancedTextView_tokenSelectedTextColor, tokenTextColor);
+                tokenVerticalPadding = a.getDimensionPixelSize(R.styleable.EnhancedTextView_tokenVerticalPadding, 0);
+                tokenHorizontalPadding = a.getDimensionPixelSize(R.styleable.EnhancedTextView_tokenHorizontalPadding, 0);
+                tokenBorderRadius = a.getDimensionPixelSize(R.styleable.EnhancedTextView_tokenBorderRadius, 0);
+            }
 
             a.recycle();
         }

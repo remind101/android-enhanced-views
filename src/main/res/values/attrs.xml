@@ -31,6 +31,8 @@
             <enum name="round" value="2" />
         </attr>
 
+        <attr name="tokenStyle" format="reference" />
+
         <attr name="tokenBackgroundColor" format="color" />
         <attr name="tokenSelectedBackgroundColor" format="color" />
 
