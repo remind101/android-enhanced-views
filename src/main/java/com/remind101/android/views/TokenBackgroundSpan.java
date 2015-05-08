@@ -18,6 +18,7 @@ import com.remind101.ui.listeners.OnSelectionChangeListener;
 public class TokenBackgroundSpan<T> extends ReplacementSpan {
     public final T tokenValue;
     private final EnhancedTextView container;
+    private final int strokeWidth = 2;
 
     private RectF rect = new RectF();
     private final Paint backgroundPaint;
@@ -40,7 +41,7 @@ public class TokenBackgroundSpan<T> extends ReplacementSpan {
 
         borderPaint = new Paint();
         borderPaint.setColor(container.getTokenBorderColor());
-        borderPaint.setStrokeWidth(2);
+        borderPaint.setStrokeWidth(strokeWidth);
         borderPaint.setStyle(Paint.Style.STROKE);
         borderPaint.setAntiAlias(true);
 
@@ -49,7 +50,7 @@ public class TokenBackgroundSpan<T> extends ReplacementSpan {
 
     @Override
     public int getSize(Paint paint, CharSequence text, int start, int end, Paint.FontMetricsInt fm) {
-        return Math.round(paint.measureText(text, start, end) + paddingHorizontal * 2);
+        return Math.round(paint.measureText(text, start, end) + paddingHorizontal * 2 + strokeWidth * 2);
     }
 
     @Override
@@ -57,9 +58,9 @@ public class TokenBackgroundSpan<T> extends ReplacementSpan {
         final int belowBaseline = (int) paint.getFontMetrics().bottom;
         final int width = getSize(paint, text, start, end, null);
 
-        rect.set(x,
+        rect.set(x + strokeWidth,
                 top - paddingVertical,
-                x + width,
+                x + width + strokeWidth,
                 y + belowBaseline + paddingVertical);
 
         canvas.drawRoundRect(rect, rounding, rounding, backgroundPaint);
