@@ -1,17 +1,13 @@
 package com.remind101.android.views;
 
-import android.annotation.TargetApi;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
-import android.os.Build;
 import android.text.Editable;
 import android.text.Selection;
 import android.text.Spannable;
 import android.text.TextWatcher;
 import android.text.style.ReplacementSpan;
-import android.view.View;
-import android.view.accessibility.AccessibilityEvent;
 
 import com.remind101.ui.listeners.OnSelectionChangeListener;
 
@@ -139,39 +135,68 @@ public class TokenBackgroundSpan<T> extends ReplacementSpan {
         });
 
         container.addTextChangedListener(new TextWatcher() {
-            public Object selectedSpan;
             String replacementText;
+            String originalTokenText;
 
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                if (originalTokenText != null || !(s instanceof Spannable)) return;
+
+                final Spannable newSpannableText = (Spannable) s;
+                final int tokenStart = newSpannableText.getSpanStart(TokenBackgroundSpan.this);
+                final int tokenEnd = newSpannableText.getSpanEnd(TokenBackgroundSpan.this);
+
+                if (tokenStart == -1 || tokenEnd == -1) {
+                    return;
+                }
+
+                originalTokenText = s.subSequence(tokenStart, tokenEnd).toString();
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                final Spannable spannable = (Spannable) s;
-                final int end = start + count;
-                if (start < spannable.getSpanEnd(TokenBackgroundSpan.this) &&
-                        end > spannable.getSpanStart(TokenBackgroundSpan.this) && end <= spannable.getSpanEnd(TokenBackgroundSpan.this)) {
-                    selectedSpan = TokenBackgroundSpan.this;
-                    replacementText = s.subSequence(start, start + count).toString();
+                if (originalTokenText == null || !(s instanceof Spannable)) return;
+
+                final Spannable newSpannableText = (Spannable) s;
+                final int newTokenStart = newSpannableText.getSpanStart(TokenBackgroundSpan.this);
+                final int newTokenEnd = newSpannableText.getSpanEnd(TokenBackgroundSpan.this);
+
+                if (newTokenStart == -1 || newTokenEnd == -1) {
+                    return;
                 }
+
+                final String newTokenText = s.subSequence(newTokenStart, newTokenEnd).toString();
+                boolean changed = !newTokenText.equals(originalTokenText);
+
+                if (changed) {
+                    replacementText = newTokenText;
+                }
+
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (selectedSpan != null) {
-                    container.removeTextChangedListener(this);
-                    int start = s.getSpanStart(selectedSpan);
-                    int end = s.getSpanEnd(selectedSpan);
-                    s.removeSpan(selectedSpan);
-                    selectedSpan = null;
-                    s.delete(start, end);
-                    if (replacementText != null) {
-                        s.insert(start, replacementText);
-                    }
-                    container.addTextChangedListener(this);
+                int tokenStart = s.getSpanStart(TokenBackgroundSpan.this);
+                int tokenEnd = s.getSpanEnd(TokenBackgroundSpan.this);
+                if (replacementText != null) {
+                    removeMyself();
+                    s.removeSpan(TokenBackgroundSpan.this);
+                    s.delete(tokenStart, tokenEnd);
+                    s.insert(tokenStart, replacementText);
+                } else if (originalTokenText != null && tokenStart == 0) {
+                    removeMyself();
                 }
             }
+
+            private void removeMyself() {
+                final TextWatcher me = this;
+                container.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        container.removeTextChangedListener(me);
+                    }
+                });
+            }
         });
-    };
+    }
 }
