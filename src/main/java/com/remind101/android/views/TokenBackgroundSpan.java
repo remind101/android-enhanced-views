@@ -135,7 +135,6 @@ public class TokenBackgroundSpan<T> extends ReplacementSpan {
         });
 
         container.addTextChangedListener(new TextWatcher() {
-            String replacementText;
             String originalTokenText;
 
             @Override
@@ -161,14 +160,16 @@ public class TokenBackgroundSpan<T> extends ReplacementSpan {
             public void afterTextChanged(Editable s) {
                 int tokenStart = s.getSpanStart(TokenBackgroundSpan.this);
                 int tokenEnd = s.getSpanEnd(TokenBackgroundSpan.this);
-                if (tokenStart >= 0 && tokenEnd >= 0) {
-                    final String newTokenText = s.subSequence(tokenStart, tokenEnd).toString();
-                    if (!newTokenText.equals(originalTokenText)) {
-                        s.removeSpan(TokenBackgroundSpan.this);
+                if (originalTokenText != null) {
+                    if (tokenStart >= 0 && tokenEnd >= 0) {
+                        final String newTokenText = s.subSequence(tokenStart, tokenEnd).toString();
+                        if (!newTokenText.equals(originalTokenText)) {
+                            s.removeSpan(TokenBackgroundSpan.this);
+                            removeMyself();
+                        }
+                    } else if (tokenStart == -1 || tokenEnd == -1) {
                         removeMyself();
                     }
-                } else if (originalTokenText != null && tokenStart == -1) {
-                    removeMyself();
                 }
             }
 
