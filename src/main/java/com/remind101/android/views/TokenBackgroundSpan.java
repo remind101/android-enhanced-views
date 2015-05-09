@@ -155,35 +155,19 @@ public class TokenBackgroundSpan<T> extends ReplacementSpan {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (originalTokenText == null || !(s instanceof Spannable)) return;
-
-                final Spannable newSpannableText = (Spannable) s;
-                final int newTokenStart = newSpannableText.getSpanStart(TokenBackgroundSpan.this);
-                final int newTokenEnd = newSpannableText.getSpanEnd(TokenBackgroundSpan.this);
-
-                if (newTokenStart == -1 || newTokenEnd == -1) {
-                    return;
-                }
-
-                final String newTokenText = s.subSequence(newTokenStart, newTokenEnd).toString();
-                boolean changed = !newTokenText.equals(originalTokenText);
-
-                if (changed) {
-                    replacementText = newTokenText;
-                }
-
             }
 
             @Override
             public void afterTextChanged(Editable s) {
                 int tokenStart = s.getSpanStart(TokenBackgroundSpan.this);
                 int tokenEnd = s.getSpanEnd(TokenBackgroundSpan.this);
-                if (replacementText != null) {
-                    removeMyself();
-                    s.removeSpan(TokenBackgroundSpan.this);
-                    s.delete(tokenStart, tokenEnd);
-                    s.insert(tokenStart, replacementText);
-                } else if (originalTokenText != null && tokenStart == 0) {
+                if (tokenStart >= 0 && tokenEnd >= 0) {
+                    final String newTokenText = s.subSequence(tokenStart, tokenEnd).toString();
+                    if (!newTokenText.equals(originalTokenText)) {
+                        s.removeSpan(TokenBackgroundSpan.this);
+                        removeMyself();
+                    }
+                } else if (originalTokenText != null && tokenStart == -1) {
                     removeMyself();
                 }
             }
