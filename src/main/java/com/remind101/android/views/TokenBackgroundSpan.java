@@ -46,7 +46,7 @@ public class TokenBackgroundSpan<T> extends ReplacementSpan {
 
     @Override
     public int getSize(Paint paint, CharSequence text, int start, int end, Paint.FontMetricsInt fm) {
-        return Math.round(paint.measureText(text, start, end) + paddingHorizontal * 2 + strokeWidth * 2);
+        return Math.round(paint.measureText(text, start, end) + paddingHorizontal * 2);
     }
 
     @Override
@@ -56,7 +56,7 @@ public class TokenBackgroundSpan<T> extends ReplacementSpan {
 
         rect.set(x + strokeWidth,
                 top - paddingVertical,
-                x + width + strokeWidth,
+                x + width - strokeWidth,
                 y + belowBaseline + paddingVertical);
 
         canvas.drawRoundRect(rect, rounding, rounding, backgroundPaint);
