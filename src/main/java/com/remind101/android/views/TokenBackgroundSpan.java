@@ -164,6 +164,11 @@ public class TokenBackgroundSpan<T> extends ReplacementSpan {
                     if (tokenStart >= 0 && tokenEnd >= 0) {
                         final String newTokenText = s.subSequence(tokenStart, tokenEnd).toString();
                         if (!newTokenText.equals(originalTokenText)) {
+                            if (originalTokenText.length() > 0 &&
+                                    newTokenText.length() > 1 &&
+                                    originalTokenText.startsWith(newTokenText)) {
+                                s.replace(tokenStart, tokenEnd, "");
+                            }
                             s.removeSpan(TokenBackgroundSpan.this);
                             removeMyself();
                         }
