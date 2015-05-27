@@ -6,6 +6,7 @@ import android.graphics.RectF;
 import android.text.Editable;
 import android.text.Selection;
 import android.text.Spannable;
+import android.text.SpannableStringBuilder;
 import android.text.TextWatcher;
 import android.text.style.ReplacementSpan;
 
@@ -24,6 +25,7 @@ public class TokenBackgroundSpan<T> extends ReplacementSpan {
     private final float rounding;
 
     private boolean selected;
+    private TextDisplayTransformation transformation;
 
     public TokenBackgroundSpan(T tokenValue, EnhancedTextView container) {
         this.tokenValue = tokenValue;
@@ -44,9 +46,20 @@ public class TokenBackgroundSpan<T> extends ReplacementSpan {
         setupCallbacksForContainer();
     }
 
+    private CharSequence getDisplayText(CharSequence text, int start, int end) {
+        SpannableStringBuilder ssb = new SpannableStringBuilder(text);
+        if (transformation != null) {
+            CharSequence transformed = transformation.transform(text.subSequence(start, end));
+            ssb.replace(start, end, transformed);
+        }
+        return ssb;
+    }
+
     @Override
     public int getSize(Paint paint, CharSequence text, int start, int end, Paint.FontMetricsInt fm) {
-        return Math.round(paint.measureText(text, start, end) + paddingHorizontal * 2);
+        CharSequence displayText = getDisplayText(text, start, end);
+        int newEnd = end + (displayText.length() - text.length());
+        return Math.round(paint.measureText(displayText, start, newEnd) + paddingHorizontal * 2);
     }
 
     @Override
@@ -68,7 +81,9 @@ public class TokenBackgroundSpan<T> extends ReplacementSpan {
             paint.setColor(container.getTokenTextColor());
         }
 
-        canvas.drawText(text, start, end, x + paddingHorizontal, y, paint);
+        CharSequence displayText = getDisplayText(text, start, end);
+        int newEnd = end + (displayText.length() - text.length());
+        canvas.drawText(displayText, start, newEnd, x + paddingHorizontal, y, paint);
     }
 
     public void setSelected(boolean selected) {
@@ -85,6 +100,35 @@ public class TokenBackgroundSpan<T> extends ReplacementSpan {
     public boolean isSelected() {
         return selected;
     }
+
+
+    public void setTransformation(TextDisplayTransformation transformation) {
+        this.transformation = transformation;
+    }
+
+    public TextDisplayTransformation getTransformation() {
+        return this.transformation;
+    }
+
+    public interface TextDisplayTransformation {
+        CharSequence transform(CharSequence text);
+    }
+
+    public static final TextDisplayTransformation COMMA_TRANSFORM = new TextDisplayTransformation() {
+        @Override
+        public CharSequence transform(CharSequence text) {
+            return text + ",";
+        }
+    };
+
+    public static final TextDisplayTransformation PERIOD_TRANSFORM = new TextDisplayTransformation() {
+        @Override
+        public CharSequence transform(CharSequence text) {
+            return text + ".";
+        }
+    };
+
+    public static final TextDisplayTransformation NO_TRANSFORM = null;
 
     private void setupCallbacksForContainer() {
         container.setOnSelectionChangeListener(new OnSelectionChangeListener() {
