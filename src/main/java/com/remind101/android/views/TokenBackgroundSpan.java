@@ -98,9 +98,9 @@ public class TokenBackgroundSpan<T> extends ReplacementSpan {
         return null;
     }
 
-    private void setCachedDisplayText(CharSequence text, int start, int end, SpannableStringBuilder ssb) {
-        lastText = text;
-        lastTransform = ssb;
+    private void setCachedDisplayText(CharSequence text, int start, int end, SpannableStringBuilder cacheValue) {
+        lastText = text != null ? new SpannableStringBuilder(text): text; // required defensive copy
+        lastTransform = cacheValue;
         lastStart = start;
         lastEnd = end;
     }
@@ -111,13 +111,14 @@ public class TokenBackgroundSpan<T> extends ReplacementSpan {
             return cachedValue;
         }
 
-        SpannableStringBuilder ssb = new SpannableStringBuilder(text);
+        SpannableStringBuilder computValue = new SpannableStringBuilder(text);
         if (transformation != null) {
             CharSequence transformed = transformation.transform(text.subSequence(start, end));
-            ssb.replace(start, end, transformed);
+            computValue.replace(start, end, transformed);
         }
-        setCachedDisplayText(text, start, end, ssb);
-        return ssb;
+
+        setCachedDisplayText(text, start, end, computValue);
+        return computValue;
     }
 
     @Override
@@ -173,8 +174,10 @@ public class TokenBackgroundSpan<T> extends ReplacementSpan {
 
 
     public void setTransformation(TextDisplayTransformation transformation) {
-        this.transformation = transformation;
-        setCachedDisplayText(null, 0, 0, null);
+        if (transformation != this.transformation) {
+            this.transformation = transformation;
+            setCachedDisplayText(null, 0, 0, null);
+        }
     }
 
     public TextDisplayTransformation getTransformation() {
