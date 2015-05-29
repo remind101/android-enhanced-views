@@ -84,15 +84,14 @@ public class EnhancedEditText extends EnhancedTextView implements View.OnFocusCh
 
     @Override
     public void setOnFocusChangeListener(OnFocusChangeListener f) {
+        super.setOnFocusChangeListener(this);
         this.f = f;
     }
 
     @Override
     public void onFocusChange(View v, boolean hasFocus) {
-        if (hasFocus) {
-            setClearIconVisible(getText().length() > 0);
-        } else {
-            setClearIconVisible(false);
+        if (isCleanable) {
+            setClearIconVisible(hasFocus && getText().length() > 0);
         }
         if (f != null) {
             f.onFocusChange(v, hasFocus);
