@@ -307,4 +307,9 @@ public class TokenBackgroundSpan<T> extends ReplacementSpan {
             }
         });
     }
+
+    @Override
+    public String toString() {
+        return "TokenBackgroundSpan<" + tokenValue + ">";
+    }
 }
