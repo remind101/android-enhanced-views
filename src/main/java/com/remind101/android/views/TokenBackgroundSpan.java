@@ -6,10 +6,16 @@ import android.graphics.RectF;
 import android.text.Editable;
 import android.text.Selection;
 import android.text.Spannable;
+import android.text.SpannableStringBuilder;
 import android.text.TextWatcher;
 import android.text.style.ReplacementSpan;
 
 import com.remind101.ui.listeners.OnSelectionChangeListener;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class TokenBackgroundSpan<T> extends ReplacementSpan {
     public final T tokenValue;
@@ -23,7 +29,19 @@ public class TokenBackgroundSpan<T> extends ReplacementSpan {
     private final float paddingVertical;
     private final float rounding;
 
+    private Paint.FontMetrics fontMetricsReference;
+
     private boolean selected;
+    private TextDisplayTransformation transformation;
+
+    // minor optimization to avoid constantly allocating the same strings during onDraw
+    private CharSequence lastText;
+    private SpannableStringBuilder lastTransform;
+    private int lastStart;
+    private int lastEnd;
+
+    private char[] bufferNew = new char[1024];
+    private char[] bufferOld = new char[1024];
 
     public TokenBackgroundSpan(T tokenValue, EnhancedTextView container) {
         this.tokenValue = tokenValue;
@@ -41,17 +59,83 @@ public class TokenBackgroundSpan<T> extends ReplacementSpan {
         borderPaint.setStyle(Paint.Style.STROKE);
         borderPaint.setAntiAlias(true);
 
+        fontMetricsReference = null;
+
         setupCallbacksForContainer();
+    }
+
+    private CharSequence getCachedDisplayText(CharSequence text, int start, int end) {
+        if (start != lastStart || end != lastEnd || lastText != null && lastText.length() != text.length()) {
+            // don't do any work if we can't cache hit
+            return null;
+        }
+
+        if (text instanceof SpannableStringBuilder && lastText instanceof SpannableStringBuilder) {
+            // this is silly but the only way to compare w/o malloc, thanks poor SSB implementation
+            SpannableStringBuilder ssbText = (SpannableStringBuilder) text;
+            SpannableStringBuilder ssbLast = (SpannableStringBuilder) lastText;
+
+            if (ssbText.getSpanStart(this) != ssbLast.getSpanStart(this) ||
+                    ssbText.getSpanEnd(this) != ssbLast.getSpanEnd(this)) {
+                // if we've moved we cant match (even if the characters were updated to be identical)
+                return null;
+            }
+
+            if (text.length() > bufferNew.length) {
+                bufferNew = new char[(int)(text.length() * 1.1)];
+            }
+            if (lastText != null && lastText.length() > bufferOld.length) {
+                bufferOld = new char[(int)(lastText.length() * 1.1)];
+            }
+
+            ssbText.getChars(0, ssbText.length(), bufferNew, 0);
+            ssbLast.getChars(0, ssbLast.length(), bufferOld, 0);
+
+            if (Arrays.equals(bufferNew, bufferOld)) {
+                return lastTransform;
+            }
+        }
+        return null;
+    }
+
+    private void setCachedDisplayText(CharSequence text, int start, int end, SpannableStringBuilder cacheValue) {
+        lastText = text != null ? new SpannableStringBuilder(text): text; // required defensive copy
+        lastTransform = cacheValue;
+        lastStart = start;
+        lastEnd = end;
+    }
+
+    private CharSequence getDisplayText(CharSequence text, int start, int end) {
+        CharSequence cachedValue = getCachedDisplayText(text, start, end);
+        if (cachedValue != null) {
+            return cachedValue;
+        }
+
+        SpannableStringBuilder computValue = new SpannableStringBuilder(text);
+        if (transformation != null) {
+            CharSequence transformed = transformation.transform(text.subSequence(start, end));
+            computValue.replace(start, end, transformed);
+        }
+
+        setCachedDisplayText(text, start, end, computValue);
+        return computValue;
     }
 
     @Override
     public int getSize(Paint paint, CharSequence text, int start, int end, Paint.FontMetricsInt fm) {
-        return Math.round(paint.measureText(text, start, end) + paddingHorizontal * 2);
+        CharSequence displayText = getDisplayText(text, start, end);
+        int newEnd = end + (displayText.length() - text.length());
+        return Math.round(paint.measureText(displayText, start, newEnd) + paddingHorizontal * 2);
     }
 
     @Override
     public void draw(Canvas canvas, CharSequence text, int start, int end, float x, int top, int y, int bottom, Paint paint) {
-        final int belowBaseline = (int) paint.getFontMetrics().bottom;
+        if (fontMetricsReference == null) {
+            fontMetricsReference = paint.getFontMetrics();
+        } else {
+            paint.getFontMetrics(fontMetricsReference);
+        }
+        final int belowBaseline = (int) fontMetricsReference.bottom;
         final int width = getSize(paint, text, start, end, null);
 
         rect.set(x + strokeWidth,
@@ -68,7 +152,9 @@ public class TokenBackgroundSpan<T> extends ReplacementSpan {
             paint.setColor(container.getTokenTextColor());
         }
 
-        canvas.drawText(text, start, end, x + paddingHorizontal, y, paint);
+        CharSequence displayText = getDisplayText(text, start, end);
+        int newEnd = end + (displayText.length() - text.length());
+        canvas.drawText(displayText, start, newEnd, x + paddingHorizontal, y, paint);
     }
 
     public void setSelected(boolean selected) {
@@ -85,6 +171,38 @@ public class TokenBackgroundSpan<T> extends ReplacementSpan {
     public boolean isSelected() {
         return selected;
     }
+
+
+    public void setTransformation(TextDisplayTransformation transformation) {
+        if (transformation != this.transformation) {
+            this.transformation = transformation;
+            setCachedDisplayText(null, 0, 0, null);
+        }
+    }
+
+    public TextDisplayTransformation getTransformation() {
+        return this.transformation;
+    }
+
+    public interface TextDisplayTransformation {
+        CharSequence transform(CharSequence text);
+    }
+
+    public static final TextDisplayTransformation COMMA_TRANSFORM = new TextDisplayTransformation() {
+        @Override
+        public CharSequence transform(CharSequence text) {
+            return text + ",";
+        }
+    };
+
+    public static final TextDisplayTransformation PERIOD_TRANSFORM = new TextDisplayTransformation() {
+        @Override
+        public CharSequence transform(CharSequence text) {
+            return text + ".";
+        }
+    };
+
+    public static final TextDisplayTransformation NO_TRANSFORM = null;
 
     private void setupCallbacksForContainer() {
         container.setOnSelectionChangeListener(new OnSelectionChangeListener() {
@@ -188,5 +306,10 @@ public class TokenBackgroundSpan<T> extends ReplacementSpan {
                 });
             }
         });
+    }
+
+    @Override
+    public String toString() {
+        return "TokenBackgroundSpan<" + tokenValue + ">";
     }
 }
