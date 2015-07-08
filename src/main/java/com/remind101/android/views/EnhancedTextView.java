@@ -624,8 +624,7 @@ public class EnhancedTextView extends TextView {
                     rect.left = getScrollX() + (getWidth() + getCompoundDrawablePadding()
                             + getMaxLineWidth() - dr.getIntrinsicWidth()) / 2;
                 } else {
-                    rect.left = getScrollX() + getWidth()
-                            - getPaddingRight() - dr.getIntrinsicWidth();
+                    rect.left = getWidth() - getPaddingRight() - dr.getIntrinsicWidth();
                 }
                 rect.top = getScrollY() + getCompoundPaddingTop()
                         + (vspace - dr.getIntrinsicHeight()) / 2;
