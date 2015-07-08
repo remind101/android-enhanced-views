@@ -611,21 +611,22 @@ public class EnhancedTextView extends TextView {
         switch (which) {
             case LEFT:
                 if (isDrawableSticky) {
+                    // TODO: This doesn't work
                     rect.left = getScrollX() + (getWidth() - dr.getIntrinsicWidth()
                             - getCompoundDrawablePadding() - getMaxLineWidth()) / 2;
                 } else {
-                    rect.left = getScrollX() + getPaddingLeft();
+                    rect.left = getPaddingLeft();
                 }
                 rect.top = getScrollY() + getCompoundPaddingTop()
                         + (vspace - dr.getIntrinsicHeight()) / 2;
                 break;
             case RIGHT:
                 if (isDrawableSticky) {
+                    // TODO: This doesn't work
                     rect.left = getScrollX() + (getWidth() + getCompoundDrawablePadding()
                             + getMaxLineWidth() - dr.getIntrinsicWidth()) / 2;
                 } else {
-                    rect.left = getScrollX() + getWidth()
-                            - getPaddingRight() - dr.getIntrinsicWidth();
+                    rect.left = getWidth() - getPaddingRight() - dr.getIntrinsicWidth();
                 }
                 rect.top = getScrollY() + getCompoundPaddingTop()
                         + (vspace - dr.getIntrinsicHeight()) / 2;
