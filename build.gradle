@@ -1,3 +1,12 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:1.2.3'
+    }
+}
+
 apply plugin: 'com.android.library'
 
 group 'com.remind101.android.views'
@@ -5,13 +14,13 @@ def version = '1.0.8'
 def versionCodeIncrement = 12
 
 android {
-    compileSdkVersion compileSdkVersionValue
-    buildToolsVersion buildToolsVersionValue
+    compileSdkVersion 21
+    buildToolsVersion '22.0.1'
 
     defaultConfig {
         minSdkVersion 8
-        targetSdkVersion compileSdkVersionValue
-        versionCode versionCodeIncrement
-        versionName version
+        targetSdkVersion 21
+        versionCode 1
+        versionName '0.1'
     }
 }
