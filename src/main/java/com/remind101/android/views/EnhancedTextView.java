@@ -22,6 +22,7 @@ import android.os.Build;
 import android.text.Layout;
 import android.text.TextPaint;
 import android.text.TextUtils;
+import android.util.AndroidRuntimeException;
 import android.util.AttributeSet;
 import android.util.FloatMath;
 import android.util.Pair;
