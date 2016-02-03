@@ -22,7 +22,6 @@ import android.os.Build;
 import android.text.Layout;
 import android.text.TextPaint;
 import android.text.TextUtils;
-import android.util.AndroidRuntimeException;
 import android.util.AttributeSet;
 import android.util.FloatMath;
 import android.util.Pair;
@@ -413,7 +412,7 @@ public class EnhancedTextView extends TextView {
     public void setText(CharSequence text, BufferType type) {
         try {
             super.setText(text, type);
-        } catch (AndroidRuntimeException e) {
+        } catch (Exception e) {
             // This can happen when the app is opened while the user is updating the System WebView in the Play Store, and will crash
         }
     }
