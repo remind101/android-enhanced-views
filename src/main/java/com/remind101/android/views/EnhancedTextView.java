@@ -409,9 +409,9 @@ public class EnhancedTextView extends TextView {
     }
 
     @Override
-    public void setText(CharSequence text, BufferType type) {
+    public void setText(CharSequence text) {
         try {
-            super.setText(text, type);
+            super.setText(text);
         } catch (Exception e) {
             // This can happen when the app is opened while the user is updating the System WebView in the Play Store, and will crash
         }
