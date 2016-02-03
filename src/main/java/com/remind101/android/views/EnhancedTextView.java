@@ -409,6 +409,15 @@ public class EnhancedTextView extends TextView {
     }
 
     @Override
+    public void setText(CharSequence text, BufferType type) {
+        try {
+            super.setText(text, type);
+        } catch (AndroidRuntimeException e) {
+            // This can happen when the app is opened while the user is updating the System WebView in the Play Store, and will crash
+        }
+    }
+
+    @Override
     public void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         freeze();
