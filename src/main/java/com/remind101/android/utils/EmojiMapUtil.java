@@ -1,6 +1,5 @@
 package com.remind101.android.utils;
 
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import java.util.HashMap;
@@ -13,7 +12,7 @@ import java.util.regex.Pattern;
  */
 public final class EmojiMapUtil {
 
-    public static String replaceCheatSheetEmojis(@Nullable CharSequence charSequence) {
+    public static String replaceCheatSheetEmojis(CharSequence charSequence) {
         if (TextUtils.isEmpty(charSequence)) {
             return "";
         }
