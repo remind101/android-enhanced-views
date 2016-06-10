@@ -30,6 +30,7 @@ import android.view.MotionEvent;
 import android.widget.TextView;
 
 import com.remind101.android.enhancedviews.R;
+import com.remind101.android.utils.EmojiMapUtil;
 import com.remind101.ui.listeners.OnSelectionChangeListener;
 
 import java.lang.reflect.Field;
@@ -502,6 +503,11 @@ public class EnhancedTextView extends TextView {
                 }
             }
         }
+    }
+
+    @Override
+    public void setText(CharSequence text, BufferType type) {
+        super.setText(EmojiMapUtil.replaceCheatSheetEmojis(text), type);
     }
 
     private void generateTempCanvas() {
